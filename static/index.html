@@ -156,6 +156,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 .chart-row.two{grid-template-columns:1.4fr 1fr;}
 .chart-row.two-eq{grid-template-columns:1fr 1fr;}
 .chart-row.three{grid-template-columns:1fr 1fr 1fr;}
+.chart-row.analysis-main{grid-template-columns:1.5fr 1fr;}
+.analysis-right-col{display:flex;flex-direction:column;gap:14px;}
 .chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
 .chart-card h3{font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:4px;}
 .chart-card .sub{font-size:11px;color:var(--text-faint);margin-bottom:16px;}
@@ -484,25 +486,29 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
           <button class="pivot-btn" onclick="showPivot(9,this)">Risk vs Revenue</button>
           <button class="pivot-btn" onclick="showPivot(10,this)">Pipeline Velocity</button>
         </div>
-        <div class="chart-card" style="margin-bottom:20px;">
-          <h3 id="pivotTitle">Revenue vs Sales Effort</h3>
-          <p style="font-size:12px;color:var(--text-faint);margin-bottom:14px;" id="pivotInsight"></p>
-          <div style="position:relative;"><canvas id="pivotChart" height="200"></canvas></div>
-          <div id="pivotTable" style="margin-top:16px;overflow-x:auto;"></div>
-        </div>
-        <div class="chart-row two-eq" style="margin-bottom:20px;">
+        <div class="chart-row analysis-main" style="margin-bottom:14px;align-items:start;">
+          <!-- Left: pivot chart -->
           <div class="chart-card">
-            <h3>Service Mix</h3>
-            <div class="sub">Pipeline by service</div>
-            <canvas id="serviceMixChart" height="140"></canvas>
+            <h3 id="pivotTitle">Revenue vs Sales Effort</h3>
+            <p style="font-size:11px;color:var(--text-faint);margin-bottom:12px;" id="pivotInsight"></p>
+            <div style="position:relative;height:210px;"><canvas id="pivotChart"></canvas></div>
+            <div id="pivotTable" style="margin-top:10px;overflow-x:auto;max-height:120px;overflow-y:auto;font-size:11px;"></div>
           </div>
-          <div class="chart-card">
-            <h3>5-Year Target vs Pipeline</h3>
-            <div class="sub">THB millions</div>
-            <canvas id="targetChart" height="140"></canvas>
+          <!-- Right: service mix + target stacked -->
+          <div class="analysis-right-col">
+            <div class="chart-card">
+              <h3>Service Mix</h3>
+              <div class="sub">Pipeline by service</div>
+              <div style="position:relative;height:120px;"><canvas id="serviceMixChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h3>5-Year Target vs Pipeline</h3>
+              <div class="sub">THB millions</div>
+              <div style="position:relative;height:120px;"><canvas id="targetChart"></canvas></div>
+            </div>
           </div>
         </div>
-        <div class="chart-card" style="margin-bottom:20px;">
+        <div class="chart-card" style="margin-bottom:14px;">
           <h3>Service Breakdown</h3>
           <table class="report-table" id="serviceBreakdownTable">
             <thead><tr><th>Service</th><th>Accounts</th><th>Pipeline (THB)</th><th>Weighted (THB)</th><th>2026 Target (M)</th><th>Gap (M)</th></tr></thead>
@@ -1191,7 +1197,7 @@ function renderServiceMix(deals){
   window.charts.serviceMix=new Chart(canvas,{
     type:'doughnut',
     data:{labels,datasets:[{data:Object.values(svc),backgroundColor:labels.map(l=>SERVICE_COLORS[l]||'#8b93a6'),borderWidth:2,borderColor:'#fff'}]},
-    options:{plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}},cutout:'68%',responsive:true,maintainAspectRatio:true}
+    options:{plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}},cutout:'68%',responsive:true,maintainAspectRatio:false}
   });
 }
 
@@ -1208,7 +1214,7 @@ function renderTargetChart(deals){
       {label:'Pipeline (M)',data:pipeline,backgroundColor:'#243a6e',borderRadius:6},
       {label:'2026 Target (M)',data:targets,backgroundColor:'rgba(232,0,13,.2)',borderColor:'var(--pmc-red-500)',borderWidth:2,type:'line',pointBackgroundColor:'var(--pmc-red-500)'}
     ]},
-    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#e7ebf3'},ticks:{font:{size:11}}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#e7ebf3'},ticks:{font:{size:11}}}}}
   });
 }
 
