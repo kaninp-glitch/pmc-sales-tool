@@ -3,15 +3,33 @@ import csv
 import io
 import json
 import os
-from datetime import datetime
+import secrets
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Query
-from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# ─── Auth config ─────────────────────────────────────────────────────────────
+
+SESSION_DURATION_HOURS = 24
+
+# User directory — email is the login name
+USERS = {
+    "ajaree.to@thailandpost.com":    {"name": "Ajaree Tochai",               "password": "PMC@S&M2026"},
+    "chawachit.so@thailandpost.com": {"name": "Chawachit Soonthornsaratoon", "password": "PMC@S&M2026"},
+    "teerapat.ro@thailandpost.com":  {"name": "Teerapat Roekcharoen",        "password": "PMC@S&M2026"},
+    "tantrawan.a@beryl8.com":        {"name": "Tantrawan Ajchariyavanich",   "password": "PMC@S&M2026"},
+    "kanin.p@beryl8.com":            {"name": "Kanin Pinsuvana",             "password": "PMC@S&M2026"},
+    "pimparat.p@beryl8.com":         {"name": "Pimparat Panchatree",         "password": "PMC@S&M2026"},
+}
+
+# In-memory session store: {token: {"expires_at": datetime, "email": str, "name": str}}
+_sessions: dict = {}
 
 BASE_DIR = Path(__file__).parent
 DB_PATH = BASE_DIR / "pipeline.db"
@@ -27,6 +45,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ─── Auth middleware ──────────────────────────────────────────────────────────
+
+def _valid_session(request: Request) -> dict | None:
+    """Returns session dict {expires_at, email, name} if valid, else None."""
+    token = request.cookies.get("pmc_session")
+    if not token or token not in _sessions:
+        return None
+    session = _sessions[token]
+    if session["expires_at"] < datetime.now():
+        del _sessions[token]
+        return None
+    return session
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    path = request.url.path
+    # Always allow: login endpoint + static assets + main HTML (has embedded login screen)
+    public = ["/api/login", "/api/me", "/static/", "/favicon"]
+    if path == "/" or any(path.startswith(p) for p in public):
+        return await call_next(request)
+    # Block everything else without a valid session
+    if not _valid_session(request):
+        if path.startswith("/api/"):
+            return JSONResponse({"error": "Unauthorized"}, status_code=401)
+        # For non-API routes (e.g. direct URL access), redirect to root
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/")
+    return await call_next(request)
 
 # ─── Database ────────────────────────────────────────────────────────────────
 
@@ -461,6 +508,51 @@ def get_stats():
         "deal_count": len(deals),
         "stage_breakdown": stage_breakdown,
     }
+
+# ─── Auth endpoints ───────────────────────────────────────────────────────────
+
+@app.post("/api/login")
+async def login(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        return JSONResponse({"success": False, "message": "Invalid request"}, status_code=400)
+    email = data.get("username", "").strip().lower()
+    password = data.get("password", "")
+    user = USERS.get(email)
+    if user and password == user["password"]:
+        token = secrets.token_urlsafe(32)
+        _sessions[token] = {
+            "expires_at": datetime.now() + timedelta(hours=SESSION_DURATION_HOURS),
+            "email": email,
+            "name": user["name"],
+        }
+        resp = JSONResponse({"success": True, "name": user["name"]})
+        resp.set_cookie(
+            key="pmc_session",
+            value=token,
+            httponly=True,
+            max_age=SESSION_DURATION_HOURS * 3600,
+            samesite="lax",
+        )
+        return resp
+    return JSONResponse({"success": False, "message": "Invalid username or password"}, status_code=401)
+
+@app.post("/api/logout")
+async def logout(request: Request):
+    token = request.cookies.get("pmc_session")
+    if token and token in _sessions:
+        del _sessions[token]
+    resp = JSONResponse({"success": True})
+    resp.delete_cookie("pmc_session")
+    return resp
+
+@app.get("/api/me")
+async def me(request: Request):
+    session = _valid_session(request)
+    if session:
+        return {"authenticated": True, "email": session["email"], "name": session["name"]}
+    return JSONResponse({"authenticated": False}, status_code=401)
 
 # ─── Static files (must be after all routes) ──────────────────────────────────
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
