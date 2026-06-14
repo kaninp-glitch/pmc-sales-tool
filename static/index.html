@@ -167,6 +167,15 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 .funnel-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;transition:width .4s;}
 .funnel-bar-text{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;}
 .funnel-count{font-size:11px;color:var(--text-faint);width:36px;flex-shrink:0;}
+.fc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.fc-label{font-size:12px;color:var(--text-muted);width:52px;text-align:right;flex-shrink:0;}
+.fc-track{flex:1;background:#eef0f6;border-radius:6px;height:22px;position:relative;overflow:hidden;}
+.fc-open{position:absolute;top:0;left:0;height:100%;background:#9aacd4;border-radius:6px;}
+.fc-wtd{position:absolute;top:0;left:0;height:100%;background:var(--pmc-red-500);border-radius:6px;opacity:.9;}
+.fc-val{font-size:11px;font-weight:600;color:var(--text-strong);width:56px;flex-shrink:0;}
+.fc-legend{display:flex;gap:16px;margin-top:10px;}
+.fc-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-faint);}
+.fc-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 
 /* ── LEADERBOARD ──────────────────────────────────────── */
 .lb-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
@@ -960,30 +969,25 @@ function renderForecastChart(deals){
   const keys=Object.keys(months).sort().slice(-8);
   if(!keys.length){el.innerHTML='<div class="empty-state">No deals with close dates</div>';return;}
   const maxVal=Math.max(...keys.map(k=>months[k].open),1);
-  // Fixed viewBox: 54px labels | bars | 62px values — all pixel-based, no overflow
-  const VW=460,lblW=54,valW=62,barX=lblW+4,barW=VW-lblW-valW-8;
-  const barH=22,gap=10,H=keys.length*(barH+gap)+20;
-  let svg=`<svg viewBox="0 0 ${VW} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:var(--font-body)">`;
-  keys.forEach((k,i)=>{
-    const y=i*(barH+gap);
-    const oPx=Math.max((months[k].open/maxVal)*barW,2).toFixed(1);
-    const wPx=Math.max((months[k].wtd/maxVal)*barW,2).toFixed(1);
+  let html='';
+  keys.forEach(k=>{
+    const oPct=Math.max((months[k].open/maxVal)*100,1).toFixed(1);
+    const wPct=Math.max((months[k].wtd/maxVal)*100,0.5).toFixed(1);
     const label=new Date(k+'-01').toLocaleDateString('en',{month:'short',year:'2-digit'});
-    svg+=`
-      <text x="${lblW-2}" y="${y+barH*.72}" font-size="11" fill="var(--text-faint)" text-anchor="end">${label}</text>
-      <rect x="${barX}" y="${y}" width="${barW}" height="${barH}" rx="4" fill="#eef0f6"/>
-      <rect x="${barX}" y="${y}" width="${oPx}" height="${barH}" rx="4" fill="var(--pmc-line-300)"/>
-      <rect x="${barX}" y="${y}" width="${wPx}" height="${barH}" rx="4" fill="var(--pmc-red-500)" opacity=".82"/>
-      <text x="${barX+barW+5}" y="${y+barH*.72}" font-size="11" fill="var(--text-strong)" font-weight="600">${fmtThb(months[k].open)}</text>`;
+    html+=`<div class="fc-row">
+      <div class="fc-label">${label}</div>
+      <div class="fc-track">
+        <div class="fc-open" style="width:${oPct}%"></div>
+        <div class="fc-wtd" style="width:${wPct}%"></div>
+      </div>
+      <div class="fc-val">${fmtThb(months[k].open)}</div>
+    </div>`;
   });
-  const legY=H-5;
-  svg+=`
-    <rect x="${barX}" y="${legY-9}" width="10" height="10" rx="2" fill="var(--pmc-line-300)"/>
-    <text x="${barX+13}" y="${legY}" font-size="10" fill="var(--text-faint)">Open</text>
-    <rect x="${barX+52}" y="${legY-9}" width="10" height="10" rx="2" fill="var(--pmc-red-500)" opacity=".82"/>
-    <text x="${barX+65}" y="${legY}" font-size="10" fill="var(--text-faint)">Weighted</text>
-  </svg>`;
-  el.innerHTML=svg;
+  html+=`<div class="fc-legend">
+    <div class="fc-legend-item"><div class="fc-legend-dot" style="background:#9aacd4"></div>Open</div>
+    <div class="fc-legend-item"><div class="fc-legend-dot" style="background:var(--pmc-red-500)"></div>Weighted</div>
+  </div>`;
+  el.innerHTML=html;
 }
 
 function renderFunnelChart(deals){
@@ -993,10 +997,10 @@ function renderFunnelChart(deals){
   const counts={};const vals={};
   order.forEach(s=>{counts[s]=0;vals[s]=0;});
   deals.forEach(d=>{if(order.includes(d.stage)){counts[d.stage]++;vals[d.stage]+=(d.revenue||0);}});
-  const maxC=Math.max(...Object.values(counts),1);
+  const maxV=Math.max(...Object.values(vals),1);
   let html='';
   order.forEach(s=>{
-    const pct=Math.max((counts[s]/maxC)*100,4);
+    const pct=Math.max((vals[s]/maxV)*100,4);
     const bg=STAGE_COLORS_MAP[s]||'#8b93a6';
     html+=`<div class="funnel-row">
       <div class="funnel-label">${s}</div>
