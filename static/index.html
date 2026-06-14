@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Postman Cloud · Sales Pipeline</title>
+<title>Postman Cloud · Sales OS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @font-face{font-family:'Mitr';font-weight:300;src:url('/static/fonts/Mitr-Light.ttf') format('truetype');}
@@ -12,7 +12,6 @@
 @font-face{font-family:'Sarabun';font-weight:400;src:url('/static/fonts/Sarabun.ttc') format('truetype');}
 @font-face{font-family:'Comfortaa';font-weight:700;src:url('/static/fonts/Comfortaa-Bold.ttf') format('truetype');}
 :root{
-  /* PMC Brand */
   --pmc-navy-900:#122042;--pmc-navy-800:#1a2d5a;--pmc-navy-700:#243a6e;--pmc-navy-600:#34508c;
   --pmc-red-600:#c40009;--pmc-red-500:#e8000d;--pmc-red-300:#ff8a8f;--pmc-red-100:#fdeced;
   --pmc-slate-600:#5a6478;--pmc-slate-400:#8b93a6;
@@ -22,593 +21,568 @@
   --text-strong:#1a2d5a;--text-muted:#5a6478;--text-faint:#8b93a6;
   --border-subtle:#e7ebf3;--border-default:#c9d4ea;
   --shadow-sm:0 1px 3px rgba(18,32,66,.08),0 1px 2px rgba(18,32,66,.04);
-  --shadow-md:0 4px 12px rgba(18,32,66,.08),0 2px 4px rgba(18,32,66,.04);
+  --shadow-md:0 4px 12px rgba(18,32,66,.12),0 2px 4px rgba(18,32,66,.06);
+  --shadow-accent:0 4px 16px rgba(232,0,13,.28);
   --font-display:"Mitr","Trebuchet MS",system-ui,sans-serif;
   --font-body:"Sarabun","Segoe UI",system-ui,sans-serif;
   --font-brand:"Comfortaa","Trebuchet MS",system-ui,sans-serif;
-  /* Semantic aliases for backward compat */
-  --navy:var(--pmc-navy-800);--teal:#00A896;--amber:#c98a00;--green:var(--status-success);
-  --red:var(--pmc-red-500);--blue:#3B82F6;--gray:var(--pmc-slate-400);--lgray:var(--pmc-line-200);
-  --bg:var(--pmc-mist-100);--white:#FFFFFF;
-  --stage1:var(--status-success);--stage2:#3B82F6;--stage3:var(--pmc-red-500);--stage4:var(--amber);--stage5:var(--pmc-slate-400);
+  --navy:var(--pmc-navy-800);--red:var(--pmc-red-500);
+  --bg:var(--pmc-mist-100);--white:#fff;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);display:flex;height:100vh;overflow:hidden;}
-/* Login Screen */
-#loginScreen{
-  position:fixed;inset:0;z-index:9999;
-  display:grid;grid-template-columns:1.05fr 1fr;
-}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);min-height:100vh;}
+
+/* ── LOGIN ────────────────────────────────────────────── */
+#loginScreen{position:fixed;inset:0;z-index:9999;display:grid;grid-template-columns:1.05fr 1fr;}
 #loginScreen.hidden{display:none;}
-/* Left brand panel */
 .login-brand{
-  background:linear-gradient(160deg,var(--pmc-navy-900) 0%,var(--pmc-navy-700) 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:60px 48px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(155deg,var(--pmc-navy-900) 0%,var(--pmc-navy-700) 100%);
+  display:flex;flex-direction:column;justify-content:center;padding:64px 56px;
+  color:#fff;position:relative;overflow:hidden;
 }
-.login-brand::before{
-  content:'';position:absolute;inset:0;
-  background:url('/static/assets/pmc-logo-white.png') center/320px no-repeat;
-  opacity:.04;pointer-events:none;
+.login-brand::after{
+  content:'';position:absolute;right:-80px;top:-80px;width:400px;height:400px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.06);pointer-events:none;
 }
-.login-brand-logo{width:72px;height:72px;object-fit:contain;margin-bottom:24px;}
-.login-brand-name{font-family:var(--font-brand);font-size:28px;font-weight:700;letter-spacing:.5px;margin-bottom:8px;}
-.login-brand-sub{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:40px;text-align:center;}
-.login-brand-stats{display:flex;gap:32px;}
-.login-stat-val{font-family:var(--font-display);font-size:28px;font-weight:500;color:#fff;text-align:center;}
-.login-stat-lbl{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-top:2px;}
-/* Right form panel */
-.login-form-panel{
-  background:#fff;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:60px 48px;
-}
+.lb-eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--pmc-red-300);margin-bottom:20px;}
+.lb-headline{font-family:var(--font-display);font-weight:300;font-size:38px;line-height:1.25;margin-bottom:48px;max-width:420px;}
+.lb-stats{display:flex;gap:40px;}
+.lb-stat-val{font-family:var(--font-display);font-size:30px;font-weight:500;color:#fff;}
+.lb-stat-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;}
+.lb-logo{width:64px;margin-bottom:36px;opacity:.9;}
+.login-form-panel{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 48px;}
 .login-card{width:100%;max-width:360px;}
+.lf-logo{width:52px;margin-bottom:28px;}
 .login-card h2{font-family:var(--font-display);font-size:24px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:4px;}
-.login-card .login-sub{font-size:13px;color:var(--text-muted);margin-bottom:36px;}
-.login-card .login-logo{display:none;}
-.login-card .login-divider{display:none;}
-.login-field{margin-bottom:18px;}
+.login-sub{font-size:13px;color:var(--text-muted);margin-bottom:32px;}
+.login-field{margin-bottom:16px;}
 .login-field label{display:block;font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px;}
-.login-field input{
-  width:100%;padding:11px 14px;border:1.5px solid var(--border-default);border-radius:8px;
-  font-family:var(--font-body);font-size:14px;color:var(--pmc-navy-900);outline:none;transition:border .15s,box-shadow .15s;
-  background:#fff;
-}
+.login-field input{width:100%;padding:11px 14px;border:1.5px solid var(--border-default);border-radius:8px;font-family:var(--font-body);font-size:14px;color:var(--pmc-navy-900);outline:none;transition:border .15s,box-shadow .15s;}
 .login-field input:focus{border-color:var(--pmc-navy-700);box-shadow:0 0 0 3px rgba(36,58,110,.1);}
-.login-btn{
-  width:100%;padding:13px;margin-top:8px;
-  background:var(--pmc-navy-800);color:#fff;border:none;border-radius:8px;
-  font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;
-  transition:background .15s,transform .1s;letter-spacing:.3px;
-}
-.login-btn:hover{background:var(--pmc-navy-900);}
+.login-btn{width:100%;padding:14px;margin-top:10px;background:var(--pmc-red-500);color:#fff;border:none;border-radius:10px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:background .15s,box-shadow .15s,transform .1s;box-shadow:var(--shadow-accent);letter-spacing:.3px;}
+.login-btn:hover{background:var(--pmc-red-600);box-shadow:0 6px 20px rgba(232,0,13,.35);}
 .login-btn:active{transform:scale(.98);}
-.login-error{
-  margin-top:14px;padding:10px 14px;background:var(--pmc-red-100);
-  border:1px solid var(--pmc-red-300);border-radius:8px;
-  font-size:13px;color:var(--pmc-red-600);display:none;
+.login-error{margin-top:12px;padding:10px 14px;background:var(--pmc-red-100);border:1px solid var(--pmc-red-300);border-radius:8px;font-size:13px;color:var(--pmc-red-600);display:none;}
+.login-footer{margin-top:28px;font-size:11px;color:var(--text-faint);text-align:center;}
+@media(max-width:800px){#loginScreen{grid-template-columns:1fr;}.login-brand{display:none;}}
+
+/* ── APP SHELL ────────────────────────────────────────── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:row;}
+#app.visible{display:flex;}
+
+/* ── SIDEBAR ──────────────────────────────────────────── */
+#sidebar{
+  width:248px;flex-shrink:0;background:var(--pmc-navy-800);
+  display:flex;flex-direction:column;height:100vh;overflow-y:auto;
+  position:relative;z-index:10;
 }
-.login-card .login-footer{margin-top:28px;font-size:11px;color:var(--text-faint);text-align:center;}
-@media(max-width:800px){
-  #loginScreen{grid-template-columns:1fr;}
-  .login-brand{display:none;}
+.sb-header{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.sb-logo img{width:36px;height:36px;object-fit:contain;}
+.sb-logo-text{font-family:var(--font-brand);font-size:16px;font-weight:700;color:#fff;letter-spacing:.2px;}
+.sb-subtitle{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--pmc-red-300);margin-top:2px;padding-left:46px;}
+.sb-nav{flex:1;padding:12px 0;}
+.sb-nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 20px;
+  cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;
+  transition:background .15s,color .15s;position:relative;user-select:none;
 }
-/* Logout button */
-.logout-btn{
-  display:flex;align-items:center;gap:8px;width:100%;
-  padding:10px 20px;background:transparent;
-  border:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;
-  cursor:pointer;text-align:left;transition:all .15s;font-family:var(--font-body);
-  border-top:1px solid rgba(255,255,255,.06);
+.sb-nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
+.sb-nav-item.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 var(--pmc-red-500);}
+.sb-nav-item .nav-icon{font-size:16px;width:20px;text-align:center;}
+.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:8px 20px;}
+.sb-section-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:8px 20px 4px;}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07);}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-avatar{
+  width:36px;height:36px;border-radius:50%;background:var(--pmc-red-500);
+  color:#fff;font-family:var(--font-display);font-size:14px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.logout-btn:hover{background:rgba(196,0,9,.15);color:#ff8a8f;}
-/* Sidebar */
-#sidebar{width:248px;background:var(--pmc-navy-900);color:#fff;display:flex;flex-direction:column;flex-shrink:0;z-index:10;}
-#sidebar .logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;}
-#sidebar .logo img{width:36px;height:36px;object-fit:contain;}
-#sidebar .logo-text h1{font-family:var(--font-brand);font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px;}
-#sidebar .logo-text p{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;}
-#sidebar nav{flex:1;padding:10px 0;}
-#sidebar nav a{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.6);text-decoration:none;font-size:13px;cursor:pointer;transition:all .15s;border-radius:0;margin:1px 0;}
-#sidebar nav a:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
-#sidebar nav a.active{background:rgba(255,255,255,.1);color:#fff;border-left:3px solid var(--pmc-red-500);}
-#sidebar nav a.active .nav-label{font-weight:500;}
-#sidebar nav a .icon{width:18px;text-align:center;font-size:15px;flex-shrink:0;}
-#sidebar .sidebar-user{padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;}
-#sidebar .sidebar-user .user-avatar{width:32px;height:32px;border-radius:50%;background:var(--pmc-navy-700);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);flex-shrink:0;}
-#sidebar .sidebar-user .user-name{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);line-height:1.3;}
-#sidebar .sidebar-user .user-role{font-size:10px;color:rgba(255,255,255,.4);}
-#sidebar .sidebar-footer{padding:10px 20px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:rgba(255,255,255,.3);}
-/* Main */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.sb-user-info{flex:1;min-width:0;}
+.sb-user-name{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:11px;color:rgba(255,255,255,.4);}
+.sb-logout{background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:16px;padding:4px;transition:color .15s;flex-shrink:0;}
+.sb-logout:hover{color:rgba(255,255,255,.8);}
+#syncTime{font-size:10px;color:rgba(255,255,255,.25);padding:8px 20px 0;text-align:center;}
+
+/* ── MAIN AREA ────────────────────────────────────────── */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOPBAR ───────────────────────────────────────────── */
 #topbar{
-  background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border-subtle);padding:10px 24px;
-  display:flex;align-items:center;gap:12px;flex-shrink:0;
-  box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:5;
+  height:62px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 24px;
+  background:rgba(244,245,248,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-subtle);z-index:5;position:relative;
 }
-#topbar h2{font-family:var(--font-display);font-size:15px;font-weight:500;color:var(--pmc-navy-900);flex:1;letter-spacing:.2px;}
-#topbar .user-input{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);}
-#topbar .sync-time{font-size:11px;color:var(--text-faint);}
+.tb-page-title{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--pmc-navy-900);flex:1;}
+.tb-search{position:relative;}
+.tb-search input{
+  padding:7px 12px 7px 32px;border:1.5px solid var(--border-default);border-radius:8px;
+  font-size:13px;color:var(--text-strong);background:#fff;outline:none;width:200px;
+  font-family:var(--font-body);transition:border .15s,width .2s;
+}
+.tb-search input:focus{border-color:var(--pmc-navy-600);width:260px;}
+.tb-search::before{content:'🔍';position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;pointer-events:none;}
+.tb-seg{display:flex;background:var(--border-subtle);border-radius:8px;padding:2px;gap:1px;}
+.tb-seg-btn{padding:5px 12px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.tb-seg-btn.active{background:#fff;color:var(--pmc-navy-800);box-shadow:var(--shadow-sm);}
+.tb-icon-btn{width:34px;height:34px;border:none;background:transparent;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background .15s,color .15s;position:relative;}
+.tb-icon-btn:hover{background:var(--border-subtle);color:var(--text-strong);}
+.tb-bell-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--pmc-red-500);border-radius:50%;border:1.5px solid var(--bg);}
+
+/* ── CONTENT ──────────────────────────────────────────── */
 #content{flex:1;overflow-y:auto;padding:24px;}
-/* KPI Cards */
-.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* ── KPI GRID ─────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
 .kpi-card{
-  background:var(--white);border-radius:12px;padding:16px;
-  box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);
-  transition:box-shadow .15s,transform .15s;
+  background:#fff;border-radius:14px;padding:18px 20px;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);position:relative;overflow:hidden;
 }
-.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
-.kpi-card .label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;font-weight:500;}
-.kpi-card .value{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--pmc-navy-900);}
-.kpi-card .sub{font-size:10px;color:var(--text-muted);margin-top:4px;}
-/* Charts */
-.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-.chart-card{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
-.chart-card h3{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px;}
-.chart-card canvas{max-height:220px;}
-.funnel-card{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);margin-bottom:20px;}
-.funnel-card h3{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px;}
-/* Tables */
-.table-card{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);margin-bottom:20px;}
-.table-card h3{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px;}
-table{width:100%;border-collapse:collapse;font-size:12px;}
-th{text-align:left;padding:9px 10px;font-size:11px;font-weight:600;color:var(--text-faint);border-bottom:2px solid var(--border-subtle);cursor:pointer;user-select:none;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;}
-th:hover{color:var(--pmc-navy-800);}
-th.sorted-asc::after{content:" ↑";}
-th.sorted-desc::after{content:" ↓";}
-td{padding:9px 10px;border-bottom:1px solid var(--border-subtle);vertical-align:middle;}
-tr:hover td{background:var(--pmc-mist-100);}
-/* Badges */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;}
-.badge-stage1{background:#d1fae5;color:#065f46;}
-.badge-stage2{background:#dbeafe;color:#1e40af;}
-.badge-stage3{background:#fee2e2;color:#991b1b;}
-.badge-stage4{background:#fef3c7;color:#92400e;}
-.badge-stage5{background:#f1f5f9;color:#475569;}
-.badge-p1{background:#fee2e2;color:#991b1b;}
-.badge-p2{background:#fef3c7;color:#92400e;}
-.badge-p3{background:#f1f5f9;color:#475569;}
-.badge-survey{background:#d1fae5;color:#065f46;}
-.badge-express{background:#dbeafe;color:#1e40af;}
-.badge-matching{background:#fef3c7;color:#92400e;}
-.badge-value-added{background:#ede9fe;color:#5b21b6;}
-.risk-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
-.risk-low{background:var(--green);}
-.risk-medium{background:var(--amber);}
-.risk-high{background:var(--red);}
-/* Pipeline tab */
-.action-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;background:var(--white);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
-.action-bar input,.action-bar select{border:1px solid var(--border-default);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--text-strong);font-family:var(--font-body);}
-.action-bar input:focus,.action-bar select:focus{outline:none;border-color:var(--pmc-navy-700);box-shadow:0 0 0 2px rgba(36,58,110,.1);}
-.action-bar .results{font-size:12px;color:var(--text-faint);flex:1;}
-.btn{padding:7px 14px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-body);}
-.btn-primary{background:var(--pmc-navy-800);color:#fff;}
-.btn-primary:hover{background:var(--pmc-navy-900);}
-.btn-secondary{background:var(--pmc-mist-100);color:var(--text-muted);border:1px solid var(--border-default);}
-.btn-secondary:hover{background:var(--border-subtle);}
-.btn-danger{background:var(--pmc-red-600);color:#fff;}
-.btn-danger:hover{background:#a0000c;}
-.btn-sm{padding:4px 9px;font-size:11px;}
-.pipeline-table-wrap{background:var(--white);border-radius:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);overflow:hidden;}
-.pipeline-table-wrap table tr td:first-child{border-left:4px solid transparent;}
-.stage1-row td:first-child{border-left-color:var(--stage1)!important;}
-.stage2-row td:first-child{border-left-color:var(--stage2)!important;}
-.stage3-row td:first-child{border-left-color:var(--stage3)!important;}
-.stage4-row td:first-child{border-left-color:var(--stage4)!important;}
-.stage5-row td:first-child{border-left-color:var(--stage5)!important;}
-/* Modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(18,32,66,.45);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
-.modal{background:var(--white);border-radius:16px;padding:28px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(18,32,66,.2);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pmc-navy-700);}
+.kpi-card.accent::before{background:var(--pmc-red-500);}
+.kpi-icon{font-size:20px;margin-bottom:10px;}
+.kpi-val{font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--pmc-navy-900);line-height:1;}
+.kpi-label{font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+.kpi-delta{font-size:11px;margin-top:6px;}
+.kpi-delta.up{color:var(--status-success);}
+.kpi-delta.neutral{color:var(--text-faint);}
+
+/* ── CHART CARDS ──────────────────────────────────────── */
+.chart-row{display:grid;gap:14px;margin-bottom:20px;}
+.chart-row.two{grid-template-columns:1.4fr 1fr;}
+.chart-row.two-eq{grid-template-columns:1fr 1fr;}
+.chart-row.three{grid-template-columns:1fr 1fr 1fr;}
+.chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
+.chart-card h3{font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:4px;}
+.chart-card .sub{font-size:11px;color:var(--text-faint);margin-bottom:16px;}
+
+/* ── FUNNEL ───────────────────────────────────────────── */
+.funnel-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.funnel-label{font-size:12px;color:var(--text-muted);width:100px;flex-shrink:0;text-align:right;}
+.funnel-bar-wrap{flex:1;background:var(--pmc-mist-100);border-radius:6px;height:26px;position:relative;}
+.funnel-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;transition:width .4s;}
+.funnel-bar-text{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;}
+.funnel-count{font-size:11px;color:var(--text-faint);width:36px;flex-shrink:0;}
+
+/* ── LEADERBOARD ──────────────────────────────────────── */
+.lb-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.lb-rank{font-size:11px;font-weight:700;color:var(--text-faint);width:18px;flex-shrink:0;text-align:right;}
+.lb-name{font-size:13px;font-weight:500;color:var(--text-strong);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-bar-wrap{flex:1;background:var(--pmc-mist-100);border-radius:5px;height:22px;position:relative;}
+.lb-bar{height:100%;border-radius:5px;background:var(--pmc-navy-700);transition:width .4s;}
+.lb-val{font-size:11px;color:var(--text-muted);width:56px;flex-shrink:0;text-align:right;}
+
+/* ── ATTENTION DEALS ──────────────────────────────────── */
+.attn-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-subtle);}
+.attn-item:last-child{border-bottom:none;}
+.attn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.attn-dot.high{background:var(--pmc-red-500);}
+.attn-dot.med{background:var(--status-warning);}
+.attn-client{font-size:13px;font-weight:500;color:var(--text-strong);line-height:1.3;}
+.attn-meta{font-size:11px;color:var(--text-faint);margin-top:2px;}
+
+/* ── PIPELINE ─────────────────────────────────────────── */
+.pipeline-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.pipeline-filters{display:flex;gap:8px;flex:1;flex-wrap:wrap;}
+.filter-sel{padding:7px 10px;border:1.5px solid var(--border-default);border-radius:8px;font-size:12px;font-family:var(--font-body);color:var(--text-strong);background:#fff;outline:none;cursor:pointer;}
+.pipeline-actions{display:flex;gap:8px;align-items:center;}
+.view-toggle{display:flex;background:var(--border-subtle);border-radius:8px;padding:2px;}
+.vt-btn{padding:5px 12px;border:none;background:transparent;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:all .15s;}
+.vt-btn.active{background:#fff;color:var(--pmc-navy-800);box-shadow:var(--shadow-sm);}
+.results-count{font-size:12px;color:var(--text-faint);}
+
+/* ── KANBAN ───────────────────────────────────────────── */
+#boardView{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;}
+.board-col{min-width:240px;max-width:260px;flex-shrink:0;background:var(--pmc-mist-100);border-radius:12px;padding:12px;}
+.board-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.board-col-name{font-size:12px;font-weight:600;color:var(--text-strong);}
+.board-col-badge{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;}
+.board-col-val{font-size:10px;color:var(--text-faint);margin-top:2px;}
+.board-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);cursor:pointer;transition:box-shadow .15s,transform .1s;}
+.board-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.bc-client{font-size:13px;font-weight:600;color:var(--text-strong);margin-bottom:3px;}
+.bc-service{font-size:11px;color:var(--text-faint);}
+.bc-value{font-size:14px;font-weight:600;color:var(--pmc-navy-800);margin:6px 0;}
+.bc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.bc-owner{width:24px;height:24px;border-radius:50%;background:var(--pmc-navy-700);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:600;}
+.bc-date{font-size:10px;color:var(--text-faint);}
+.bc-risk{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
+.bc-risk.high{background:var(--pmc-red-100);color:var(--pmc-red-600);}
+.bc-risk.med{background:var(--status-warning-soft);color:var(--status-warning);}
+.bc-risk.low{background:var(--status-success-soft);color:var(--status-success);}
+
+/* ── TABLE ────────────────────────────────────────────── */
+#tableView{overflow-x:auto;}
+#tableView table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+#tableView th{background:var(--pmc-navy-900);color:rgba(255,255,255,.8);font-size:11px;font-weight:500;padding:10px 12px;text-align:left;cursor:pointer;user-select:none;white-space:nowrap;letter-spacing:.04em;}
+#tableView th:hover{background:var(--pmc-navy-700);}
+#tableView td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border-subtle);vertical-align:middle;}
+#tableView tr:last-child td{border-bottom:none;}
+#tableView tr:hover td{background:var(--pmc-mist-100);}
+.stage-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.risk-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;}
+.risk-badge.High{background:var(--pmc-red-100);color:var(--pmc-red-600);}
+.risk-badge.Medium{background:var(--status-warning-soft);color:var(--status-warning);}
+.risk-badge.Low{background:var(--status-success-soft);color:var(--status-success);}
+.priority-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.priority-badge.P1{background:#fde8e8;color:#c40009;}
+.priority-badge.P2{background:#fff3e0;color:#c98a00;}
+.priority-badge.P3{background:var(--border-subtle);color:var(--text-muted);}
+.action-btns{display:flex;gap:4px;}
+.action-btn{padding:4px 8px;border:none;border-radius:6px;font-size:11px;cursor:pointer;transition:background .15s;}
+.action-btn.edit{background:var(--border-subtle);color:var(--text-muted);}
+.action-btn.edit:hover{background:var(--border-default);color:var(--text-strong);}
+.action-btn.del{background:var(--pmc-red-100);color:var(--pmc-red-600);}
+.action-btn.del:hover{background:var(--pmc-red-300);color:#fff;}
+.action-btn.log{background:var(--status-success-soft);color:var(--status-success);}
+
+/* ── ANALYSIS ─────────────────────────────────────────── */
+.analysis-pivot-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.pivot-btn{padding:6px 14px;border:1.5px solid var(--border-default);border-radius:20px;background:#fff;font-size:12px;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.pivot-btn.active{background:var(--pmc-navy-800);border-color:var(--pmc-navy-800);color:#fff;}
+
+/* ── REPORTS ──────────────────────────────────────────── */
+.report-header{background:var(--pmc-navy-800);border-radius:14px;padding:26px 30px;margin-bottom:20px;color:#fff;}
+.rh-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pmc-red-300);margin-bottom:6px;}
+.rh-title{font-family:var(--font-display);font-size:24px;font-weight:400;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;}
+.report-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.report-kpi{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid var(--border-subtle);box-shadow:var(--shadow-sm);}
+.report-kpi-val{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--pmc-navy-900);}
+.report-kpi-label{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.report-table-card{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
+.report-table-card h3{font-size:14px;font-weight:600;color:var(--pmc-navy-900);margin-bottom:14px;}
+.report-table{width:100%;border-collapse:collapse;font-size:12px;}
+.report-table th{color:var(--text-muted);font-size:11px;font-weight:500;padding:6px 10px;border-bottom:2px solid var(--border-default);text-align:left;}
+.report-table td{padding:8px 10px;border-bottom:1px solid var(--border-subtle);}
+.report-table tr:last-child td{border-bottom:none;}
+.report-actions{display:flex;gap:10px;margin-bottom:20px;}
+
+/* ── BUTTONS ──────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-decoration:none;}
+.btn-primary{background:var(--pmc-red-500);color:#fff;box-shadow:0 2px 8px rgba(232,0,13,.22);}
+.btn-primary:hover{background:var(--pmc-red-600);box-shadow:var(--shadow-accent);}
+.btn-secondary{background:#fff;color:var(--text-strong);border:1.5px solid var(--border-default);}
+.btn-secondary:hover{border-color:var(--pmc-navy-600);color:var(--pmc-navy-800);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-navy{background:var(--pmc-navy-800);color:#fff;}
+.btn-navy:hover{background:var(--pmc-navy-900);}
+
+/* ── MODALS ───────────────────────────────────────────── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(18,32,66,.45);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.modal{background:#fff;border-radius:16px;padding:28px;max-height:90vh;overflow-y:auto;width:90%;max-width:640px;box-shadow:0 20px 60px rgba(18,32,66,.2);}
 .modal h2{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:20px;}
-.modal .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.modal .form-full{grid-column:1/-1;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .form-group{display:flex;flex-direction:column;gap:5px;}
-.form-group label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
-.form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border-default);border-radius:8px;padding:8px 11px;font-size:13px;color:var(--text-strong);font-family:var(--font-body);}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--pmc-navy-700);box-shadow:0 0 0 3px rgba(36,58,110,.1);}
-.form-group textarea{resize:vertical;}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-subtle);}
-/* Clients tab */
-.pivot-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.pivot-btn{padding:6px 12px;border-radius:7px;border:1px solid var(--border-default);background:var(--white);font-size:11px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all .15s;font-family:var(--font-body);}
-.pivot-btn:hover{border-color:var(--pmc-navy-700);color:var(--pmc-navy-700);}
-.pivot-btn.active{background:var(--pmc-navy-800);color:#fff;border-color:var(--pmc-navy-800);}
-.clients-chart-card{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);margin-bottom:16px;}
-.clients-chart-card h3{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px;}
-.clients-chart-card p.insight{font-size:11px;color:var(--text-muted);margin-bottom:12px;}
-.clients-chart-card canvas{max-height:320px;}
-/* Client Cards */
-.client-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
-.client-card{background:var(--white);border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:all .15s;border:2px solid transparent;}
-.client-card:hover{border-color:var(--pmc-navy-700);transform:translateY(-1px);}
-.client-card.expanded{border-color:var(--pmc-navy-700);}
-.client-card .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.client-card .card-name{font-size:14px;font-weight:700;color:var(--navy);}
-.client-card .card-short{font-size:11px;color:var(--gray);margin-top:1px;}
-.client-card .card-revenue{font-size:16px;font-weight:700;color:var(--pmc-navy-700);margin:6px 0;}
-.client-card .card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-.client-card .card-expanded{margin-top:10px;border-top:1px solid var(--lgray);padding-top:10px;font-size:11px;color:#475569;display:none;}
-.client-card.expanded .card-expanded{display:block;}
-.client-card .card-expanded p{margin-bottom:4px;line-height:1.5;}
-.client-card .card-expanded .exp-label{font-weight:600;color:var(--navy);}
-/* Services tab */
-.service-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.service-summary{background:var(--white);border-radius:12px;padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);}
-.service-summary .svc-name{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;}
-.service-summary .svc-count{font-size:11px;color:var(--gray);}
-.service-summary .svc-revenue{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--pmc-navy-800);margin:4px 0;}
-.progress-bar{height:6px;background:var(--lgray);border-radius:3px;overflow:hidden;margin:6px 0;}
-.progress-fill{height:100%;border-radius:3px;transition:width .5s;}
-.accordion{margin-bottom:8px;}
-.accordion-header{background:var(--white);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.accordion-body{background:var(--white);border-radius:0 0 8px 8px;padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s;}
-.accordion-body.open{max-height:600px;padding:12px 16px;}
-/* Reports tab */
-.report-box{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border-subtle);margin-bottom:16px;}
-.report-box h3{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--pmc-navy-900);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px;}
-.summary-text{font-family:'Courier New',monospace;font-size:11px;line-height:1.7;color:#1e293b;white-space:pre-wrap;background:#f8fafc;border-radius:6px;padding:12px;max-height:400px;overflow-y:auto;}
-.export-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-.danger-zone{border:2px solid var(--pmc-red-600);border-radius:12px;padding:16px;background:var(--pmc-red-100);}
-.danger-zone h3{color:var(--pmc-red-600);font-size:12px;font-weight:600;margin-bottom:8px;}
-.danger-confirm{margin-top:10px;display:none;}
-/* Toast */
-.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
-.toast{background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:slideIn .2s ease;min-width:200px;}
-.toast.success{background:var(--green);}
-.toast.error{background:var(--red);}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
-/* Activity Log */
-.activity-entry{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--lgray);}
-.activity-entry .act-time{font-size:10px;color:var(--gray);white-space:nowrap;min-width:130px;}
-.activity-entry .act-body{font-size:11px;color:#475569;}
-.activity-entry .act-body strong{color:var(--navy);}
-/* Import Modal */
-.drop-zone{border:2px dashed var(--lgray);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;}
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--pmc-navy-700);background:var(--pmc-mist-100);}
-.drop-zone p{font-size:12px;color:var(--gray);}
-.preview-table{overflow-x:auto;margin:10px 0;}
-/* Range slider */
-input[type=range]{width:100%;accent-color:var(--pmc-navy-700);}
-.effort-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);}
-/* Responsive print */
-@media print{
-  #sidebar{display:none;}
-  #main{width:100%;}
-  #topbar{display:none;}
-  .action-bar{display:none;}
-  .btn{display:none;}
-}
-/* Tabs hidden */
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-/* Toggle toggle */
-.toggle-group{display:flex;gap:0;border:1px solid var(--lgray);border-radius:6px;overflow:hidden;margin-bottom:10px;}
-.toggle-group button{padding:5px 12px;border:none;background:var(--white);font-size:11px;cursor:pointer;font-weight:600;color:#475569;}
-.toggle-group button.active{background:var(--pmc-navy-800);color:#fff;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;}
+.form-group input,.form-group select,.form-group textarea{padding:9px 12px;border:1.5px solid var(--border-default);border-radius:8px;font-family:var(--font-body);font-size:13px;color:var(--text-strong);outline:none;transition:border .15s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--pmc-navy-600);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-subtle);}
+.drop-zone{border:2px dashed var(--border-default);border-radius:10px;padding:28px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;transition:border .15s;}
+.drop-zone:hover{border-color:var(--pmc-navy-600);background:var(--pmc-mist-100);}
+.preview-table{overflow-x:auto;font-size:11px;}
+.danger-box{background:var(--pmc-red-100);border:1px solid var(--pmc-red-300);border-radius:10px;padding:14px;margin-top:14px;}
+
+/* ── TOAST ────────────────────────────────────────────── */
+#toastContainer{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--pmc-navy-800);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--shadow-md);animation:slideIn .25s ease;pointer-events:auto;}
+.toast.success{background:var(--status-success);}
+.toast.error{background:var(--pmc-red-600);}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── MISC ─────────────────────────────────────────────── */
+.section-title{font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-faint);font-size:13px;}
+@media print{#sidebar,#topbar,.report-actions{display:none!important;}#content{overflow:visible!important;}#app{height:auto!important;overflow:visible!important;}}
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
 <div id="loginScreen">
-  <!-- Left brand panel -->
   <div class="login-brand">
-    <img class="login-brand-logo" src="/static/assets/pmc-logo-white.png" alt="PMC Logo" onerror="this.style.display='none'"/>
-    <div class="login-brand-name">Postman Cloud</div>
-    <div class="login-brand-sub">Field Force as a Service<br/>by Capital8 Consortium</div>
-    <div class="login-brand-stats">
-      <div><div class="login-stat-val">25K+</div><div class="login-stat-lbl">Postmen Network</div></div>
-      <div><div class="login-stat-val">77</div><div class="login-stat-lbl">Provinces</div></div>
-      <div><div class="login-stat-val">5yr</div><div class="login-stat-lbl">Co-investment</div></div>
+    <img src="/static/assets/pmc-logo-white.png" class="lb-logo" alt="PMC"/>
+    <div class="lb-eyebrow">Sales Operating System</div>
+    <h1 class="lb-headline">The pipeline behind Thailand's most trusted field network.</h1>
+    <div class="lb-stats">
+      <div><div class="lb-stat-val">25,000</div><div class="lb-stat-lbl">Postmen nationwide</div></div>
+      <div><div class="lb-stat-val">77</div><div class="lb-stat-lbl">Provinces covered</div></div>
+      <div><div class="lb-stat-val">142</div><div class="lb-stat-lbl">Years of trust</div></div>
     </div>
   </div>
-  <!-- Right form panel -->
   <div class="login-form-panel">
     <div class="login-card">
-      <h2>Sales Pipeline</h2>
-      <p class="login-sub">Capital8 · Restricted Access</p>
-      <form id="loginForm" onsubmit="doLogin(event)">
+      <img src="/static/assets/pmc-logo.png" class="lf-logo" alt="PMC"/>
+      <h2>Welcome back</h2>
+      <p class="login-sub">Sign in to your Sales OS account</p>
+      <form onsubmit="doLogin(event)">
         <div class="login-field">
-          <label>Email</label>
-          <input type="email" id="loginUser" placeholder="your.email@domain.com" autocomplete="username" required/>
+          <label>Email address</label>
+          <input type="text" id="loginUser" autocomplete="username" placeholder="you@example.com"/>
         </div>
         <div class="login-field">
           <label>Password</label>
-          <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" required/>
+          <input type="password" id="loginPass" autocomplete="current-password" placeholder="••••••••"/>
         </div>
-        <button type="submit" class="login-btn" id="loginBtn">Sign In →</button>
-        <div class="login-error" id="loginError">Incorrect email or password. Please try again.</div>
+        <button type="submit" class="login-btn" id="loginBtn">Sign in →</button>
+        <div class="login-error" id="loginError">Invalid email or password.</div>
       </form>
-      <p class="login-footer">🔒 Authorised users only · All access is logged</p>
+      <p class="login-footer">Postman Cloud · Capital8 Consortium · Confidential</p>
     </div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <div class="logo">
-    <img src="/static/assets/pmc-logo-white.png" alt="PMC" onerror="this.style.display='none'"/>
-    <div class="logo-text">
-      <h1>Postman Cloud</h1>
-      <p>Sales Pipeline v1.0</p>
+<!-- ═══════════════════ APP ═══════════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo">
+        <img src="/static/assets/pmc-logo-white.png" alt="PMC"/>
+        <span class="sb-logo-text">Postman Cloud</span>
+      </div>
+      <div class="sb-subtitle">Sales Operating System</div>
     </div>
-  </div>
-  <nav>
-    <a class="active" onclick="showTab('dashboard')" id="nav-dashboard"><span class="icon">📊</span><span class="nav-label">Dashboard</span></a>
-    <a onclick="showTab('pipeline')" id="nav-pipeline"><span class="icon">🔀</span><span class="nav-label">Pipeline</span></a>
-    <a onclick="showTab('clients')" id="nav-clients"><span class="icon">🏢</span><span class="nav-label">Clients</span></a>
-    <a onclick="showTab('services')" id="nav-services"><span class="icon">⚙️</span><span class="nav-label">Services</span></a>
-    <a onclick="showTab('reports')" id="nav-reports"><span class="icon">📋</span><span class="nav-label">Reports</span></a>
-  </nav>
-  <div class="sidebar-user">
-    <div class="user-avatar" id="userAvatar">?</div>
-    <div><div class="user-name" id="userName"></div><div class="user-role">Sales Team</div></div>
-  </div>
-  <button class="logout-btn" onclick="doLogout()">🔓 Sign Out</button>
-  <div class="sidebar-footer">Capital8 Consortium © 2026</div>
-</div>
-
-<!-- MAIN -->
-<div id="main">
-  <div id="topbar">
-    <h2>Postman Cloud · Sales Pipeline</h2>
-    <div class="sync-time" id="syncTime">Loading...</div>
-  </div>
-  <div id="content">
-
-    <!-- DASHBOARD TAB -->
-    <div class="tab-content active" id="tab-dashboard">
-      <div class="kpi-grid" id="kpiGrid"></div>
-      <div class="funnel-card">
-        <h3>Pipeline Funnel by Stage</h3>
-        <canvas id="funnelChart" height="140"></canvas>
+    <nav class="sb-nav">
+      <div class="sb-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
+        <span class="nav-icon">📊</span> <span id="nav-dashboard">Dashboard</span>
       </div>
-      <div class="chart-row">
-        <div class="chart-card">
-          <h3>Revenue by Service</h3>
-          <canvas id="serviceChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h3>Revenue by Sector (Top 8)</h3>
-          <canvas id="sectorChart"></canvas>
-        </div>
+      <div class="sb-nav-item" onclick="switchTab('pipeline',this)" data-tab="pipeline">
+        <span class="nav-icon">📋</span> <span id="nav-pipeline">Pipeline</span>
       </div>
-      <div class="table-card">
-        <h3>Top 5 Accounts by Revenue</h3>
-        <table>
-          <thead><tr><th>#</th><th>Client</th><th>Stage</th><th>Revenue</th><th>Owner</th><th>Priority</th></tr></thead>
-          <tbody id="top5Body"></tbody>
-        </table>
+      <div class="sb-nav-item" onclick="switchTab('analysis',this)" data-tab="analysis">
+        <span class="nav-icon">🔬</span> <span id="nav-analysis">Analysis</span>
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('reports',this)" data-tab="reports">
+        <span class="nav-icon">📄</span> <span id="nav-reports">Reports</span>
+      </div>
+    </nav>
+    <div id="syncTime"></div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="userAvatar">--</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="userName">–</div>
+          <div class="sb-user-role" id="userRoleLabel">Management</div>
+        </div>
+        <button class="sb-logout" onclick="doLogout()" title="Sign out">⎋</button>
       </div>
     </div>
+  </aside>
 
-    <!-- PIPELINE TAB -->
-    <div class="tab-content" id="tab-pipeline">
-      <div class="action-bar">
-        <input type="text" id="searchBox" placeholder="🔍 Search deals..." oninput="filterPipeline()" style="width:180px"/>
-        <select id="stageFilter" onchange="filterPipeline()">
-          <option value="">All Stages</option>
-          <option>Active/Verbal</option><option>In Discussion</option>
-          <option>On Hold</option><option>Discovery</option><option>New Lead</option>
-        </select>
-        <select id="serviceFilter" onchange="filterPipeline()">
-          <option value="">All Services</option>
-          <option>Survey</option><option>Express</option><option>Matching</option><option>Value-Added</option><option>Commerce</option>
-        </select>
-        <select id="sectorFilter" onchange="filterPipeline()">
-          <option value="">All Sectors</option>
-        </select>
-        <select id="priorityFilter" onchange="filterPipeline()">
-          <option value="">All Priorities</option>
-          <option>P1</option><option>P2</option><option>P3</option>
-        </select>
-        <button class="btn btn-secondary btn-sm" onclick="clearFilters()">✕ Clear</button>
-        <span class="results" id="resultsCount">Loading...</span>
-        <button class="btn btn-primary" onclick="openCreateModal()">+ New Opportunity</button>
-        <button class="btn btn-secondary" onclick="openImportModal()">⬆ Import</button>
+  <!-- MAIN -->
+  <main id="main">
+    <!-- TOPBAR -->
+    <header id="topbar">
+      <div class="tb-page-title" id="pageTitle">Dashboard</div>
+      <div class="tb-search"><input type="text" id="globalSearch" placeholder="Search deals…" oninput="onGlobalSearch()"/></div>
+      <!-- Role toggle -->
+      <div class="tb-seg" id="roleToggle">
+        <button class="tb-seg-btn active" onclick="setRole('management',this)" id="nav-management">Management</button>
+        <button class="tb-seg-btn" onclick="setRole('salesperson',this)" id="nav-salesperson">Salesperson</button>
       </div>
-      <div class="pipeline-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th onclick="sortTable('id')">#</th>
-              <th onclick="sortTable('name')">Client</th>
-              <th onclick="sortTable('sector')">Sector</th>
-              <th onclick="sortTable('service')">Service</th>
-              <th onclick="sortTable('stage')">Stage</th>
-              <th onclick="sortTable('revenue')">Revenue</th>
-              <th onclick="sortTable('priority')">Priority</th>
-              <th onclick="sortTable('owner')">Owner</th>
-              <th onclick="sortTable('competitive_risk')">Risk</th>
-              <th onclick="sortTable('close_date')">Close Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="pipelineBody"></tbody>
-        </table>
+      <!-- Lang toggle -->
+      <div class="tb-seg">
+        <button class="tb-seg-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="tb-seg-btn" onclick="setLang('th',this)">TH</button>
       </div>
-    </div>
+      <!-- Bell -->
+      <button class="tb-icon-btn" id="bellBtn" title="Alerts">
+        🔔<span class="tb-bell-dot" id="bellDot" style="display:none"></span>
+      </button>
+    </header>
 
-    <!-- CLIENTS TAB -->
-    <div class="tab-content" id="tab-clients">
-      <div class="pivot-selector" id="pivotSelector">
-        <button class="pivot-btn active" onclick="showPivot(1,this)">1. Rev vs Effort</button>
-        <button class="pivot-btn" onclick="showPivot(2,this)">2. Volume vs Rev/Job</button>
-        <button class="pivot-btn" onclick="showPivot(3,this)">3. Strategic Matrix</button>
-        <button class="pivot-btn" onclick="showPivot(4,this)">4. Sector Analysis</button>
-        <button class="pivot-btn" onclick="showPivot(5,this)">5. Owner Portfolio</button>
-        <button class="pivot-btn" onclick="showPivot(6,this)">6. Service Mix</button>
-        <button class="pivot-btn" onclick="showPivot(7,this)">7. Win Probability</button>
-        <button class="pivot-btn" onclick="showPivot(8,this)">8. Rev Concentration</button>
-        <button class="pivot-btn" onclick="showPivot(9,this)">9. Risk vs Revenue</button>
-        <button class="pivot-btn" onclick="showPivot(10,this)">10. Pipeline Velocity</button>
-      </div>
-      <div class="clients-chart-card">
-        <h3 id="pivotTitle">Revenue vs Sales Effort</h3>
-        <p class="insight" id="pivotInsight"></p>
-        <div style="position:relative;">
-          <canvas id="pivotChart" height="300"></canvas>
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- ── DASHBOARD TAB ── -->
+      <div class="tab-pane active" id="tab-dashboard">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="chart-row two">
+          <div class="chart-card" id="forecastCard">
+            <h3 id="kpi-forecast-title">Forecast by Month</h3>
+            <div class="sub" id="kpi-forecast-sub">Open pipeline vs weighted forecast</div>
+            <div id="forecastChart" style="height:200px;"></div>
+          </div>
+          <div class="chart-card" id="funnelCard">
+            <h3 id="kpi-funnel-title">Pipeline Funnel</h3>
+            <div class="sub" id="kpi-funnel-sub">Deals by stage</div>
+            <div id="funnelChart" style="margin-top:8px;"></div>
+          </div>
         </div>
-        <div id="pivotTable" style="margin-top:16px;overflow-x:auto;"></div>
-      </div>
-      <div class="table-card">
-        <h3>Client Cards</h3>
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-          <input type="text" id="cardSearch" placeholder="🔍 Filter cards..." oninput="renderClientCards()" style="border:1px solid var(--lgray);border-radius:6px;padding:6px 10px;font-size:12px;"/>
-          <select id="cardStageFilter" onchange="renderClientCards()" style="border:1px solid var(--lgray);border-radius:6px;padding:6px 10px;font-size:12px;">
-            <option value="">All Stages</option>
-            <option>Active/Verbal</option><option>In Discussion</option>
-            <option>On Hold</option><option>Discovery</option><option>New Lead</option>
-          </select>
-          <select id="cardServiceFilter" onchange="renderClientCards()" style="border:1px solid var(--lgray);border-radius:6px;padding:6px 10px;font-size:12px;">
-            <option value="">All Services</option>
-            <option>Survey</option><option>Express</option><option>Matching</option><option>Value-Added</option>
-          </select>
-        </div>
-        <div class="client-cards-grid" id="clientCardsGrid"></div>
-      </div>
-    </div>
-
-    <!-- SERVICES TAB -->
-    <div class="tab-content" id="tab-services">
-      <div class="service-cards" id="serviceCards"></div>
-      <div class="chart-card" style="margin-bottom:20px;">
-        <h3>5-Year Target vs Pipeline</h3>
-        <canvas id="targetChart" height="180"></canvas>
-      </div>
-      <div class="table-card">
-        <h3>Service Breakdown</h3>
-        <table>
-          <thead><tr><th>Service</th><th>Accounts</th><th>Pipeline THB</th><th>2026 Target (M)</th><th>Gap (M)</th><th>2027 Target (M)</th><th>2028 Target (M)</th></tr></thead>
-          <tbody id="serviceBreakdownBody"></tbody>
-        </table>
-      </div>
-      <div id="serviceAccordions"></div>
-    </div>
-
-    <!-- REPORTS TAB -->
-    <div class="tab-content" id="tab-reports">
-      <div class="report-box">
-        <h3>ExCom Pipeline Summary</h3>
-        <pre class="summary-text" id="summaryText">Generating...</pre>
-        <br/>
-        <button class="btn btn-secondary btn-sm" onclick="copySummary()">📋 Copy to Clipboard</button>
-      </div>
-      <div class="report-box">
-        <h3>Export & Import</h3>
-        <div class="export-btns">
-          <a href="/api/export/csv" class="btn btn-secondary">⬇ Export Pipeline CSV</a>
-          <a href="/api/export/json" class="btn btn-secondary">⬇ Export Full JSON</a>
-          <button class="btn btn-secondary" onclick="openImportModal()">⬆ Import CSV / Excel</button>
-          <button class="btn btn-secondary" onclick="window.print()">🖨 Print Report</button>
-        </div>
-      </div>
-      <div class="danger-zone">
-        <h3>⚠ Reset Data</h3>
-        <p style="font-size:12px;color:#475569;margin-bottom:8px;">This will delete all custom data and restore the default 27 deals.</p>
-        <button class="btn btn-danger btn-sm" onclick="showResetConfirm()">Reset to Default Data</button>
-        <div class="danger-confirm" id="dangerConfirm">
-          <p style="font-size:12px;margin:8px 0;">Type <strong>RESET</strong> to confirm:</p>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="resetInput" placeholder="RESET" style="border:1px solid var(--red);border-radius:6px;padding:6px 10px;font-size:12px;"/>
-            <button class="btn btn-danger btn-sm" onclick="doReset()">Confirm Reset</button>
-            <button class="btn btn-secondary btn-sm" onclick="hideResetConfirm()">Cancel</button>
+        <div class="chart-row two-eq">
+          <div class="chart-card">
+            <h3 id="kpi-lb-title">Team Leaderboard</h3>
+            <div class="sub" id="kpi-lb-sub">Pipeline by owner</div>
+            <div id="leaderboardChart"></div>
+          </div>
+          <div class="chart-card">
+            <h3 id="kpi-attn-title">Needs Attention</h3>
+            <div class="sub" id="kpi-attn-sub">High risk or closing within 30 days</div>
+            <div id="attentionDeals"></div>
           </div>
         </div>
       </div>
-    </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+      <!-- ── PIPELINE TAB ── -->
+      <div class="tab-pane" id="tab-pipeline">
+        <div class="pipeline-header">
+          <div class="pipeline-filters">
+            <select class="filter-sel" id="ownerFilter" onchange="applyFilters()"><option value="">All Owners</option></select>
+            <select class="filter-sel" id="stageFilter" onchange="applyFilters()">
+              <option value="">All Stages</option>
+              <option>Active/Verbal</option><option>In Discussion</option>
+              <option>Discovery</option><option>New Lead</option><option>On Hold</option>
+            </select>
+            <select class="filter-sel" id="sectorFilter" onchange="applyFilters()"><option value="">All Sectors</option></select>
+            <select class="filter-sel" id="priorityFilter" onchange="applyFilters()">
+              <option value="">All Priorities</option><option>P1</option><option>P2</option><option>P3</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="clearFilters()">✕ Clear</button>
+            <span class="results-count" id="resultsCount"></span>
+          </div>
+          <div class="pipeline-actions">
+            <div class="view-toggle">
+              <button class="vt-btn active" id="vt-board" onclick="setView('board',this)">⊞ Board</button>
+              <button class="vt-btn" id="vt-table" onclick="setView('table',this)">≡ Table</button>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">+ <span id="btn-new-opp">New Opportunity</span></button>
+            <button class="btn btn-secondary btn-sm" onclick="openImportModal()">⬆ Import</button>
+          </div>
+        </div>
+        <div id="boardView"></div>
+        <div id="tableView" style="display:none;"></div>
+      </div>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastContainer"></div>
+      <!-- ── ANALYSIS TAB ── -->
+      <div class="tab-pane" id="tab-analysis">
+        <div class="analysis-pivot-btns" id="pivotBtns">
+          <button class="pivot-btn active" onclick="showPivot(1,this)">Rev vs Effort</button>
+          <button class="pivot-btn" onclick="showPivot(2,this)">Volume vs Rev/Job</button>
+          <button class="pivot-btn" onclick="showPivot(3,this)">Strategic Matrix</button>
+          <button class="pivot-btn" onclick="showPivot(4,this)">Sector Analysis</button>
+          <button class="pivot-btn" onclick="showPivot(5,this)">Owner Portfolio</button>
+          <button class="pivot-btn" onclick="showPivot(6,this)">Service Mix</button>
+          <button class="pivot-btn" onclick="showPivot(7,this)">Win Probability</button>
+          <button class="pivot-btn" onclick="showPivot(8,this)">Rev Concentration</button>
+          <button class="pivot-btn" onclick="showPivot(9,this)">Risk vs Revenue</button>
+          <button class="pivot-btn" onclick="showPivot(10,this)">Pipeline Velocity</button>
+        </div>
+        <div class="chart-card" style="margin-bottom:20px;">
+          <h3 id="pivotTitle">Revenue vs Sales Effort</h3>
+          <p style="font-size:12px;color:var(--text-faint);margin-bottom:14px;" id="pivotInsight"></p>
+          <div style="position:relative;"><canvas id="pivotChart" height="300"></canvas></div>
+          <div id="pivotTable" style="margin-top:16px;overflow-x:auto;"></div>
+        </div>
+        <div class="chart-row two-eq" style="margin-bottom:20px;">
+          <div class="chart-card">
+            <h3>Service Mix</h3>
+            <div class="sub">Pipeline by service</div>
+            <canvas id="serviceMixChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>5-Year Target vs Pipeline</h3>
+            <div class="sub">THB millions</div>
+            <canvas id="targetChart" height="200"></canvas>
+          </div>
+        </div>
+        <div class="chart-card" style="margin-bottom:20px;">
+          <h3>Service Breakdown</h3>
+          <table class="report-table" id="serviceBreakdownTable">
+            <thead><tr><th>Service</th><th>Accounts</th><th>Pipeline (THB)</th><th>Weighted (THB)</th><th>2026 Target (M)</th><th>Gap (M)</th></tr></thead>
+            <tbody id="serviceBreakdownBody"></tbody>
+          </table>
+        </div>
+      </div>
 
-<!-- EDIT/CREATE MODAL -->
-<div class="modal-backdrop" id="dealModal" style="display:none;" onclick="closeDealModalBackdrop(event)">
+      <!-- ── REPORTS TAB ── -->
+      <div class="tab-pane" id="tab-reports">
+        <div class="report-actions">
+          <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
+          <button class="btn btn-secondary" onclick="copySummary()">📋 Copy Summary</button>
+          <a class="btn btn-secondary" href="/api/template/csv">⬇ CSV Template</a>
+          <button class="btn btn-secondary btn-sm" onclick="showResetConfirm()">⚠ Reset Data</button>
+        </div>
+        <div class="report-header">
+          <div class="rh-eyebrow">Postman Cloud · Sales OS</div>
+          <div class="rh-title">Pipeline Report</div>
+          <div class="rh-sub" id="reportDate"></div>
+        </div>
+        <div class="report-kpi-grid" id="reportKpiGrid"></div>
+        <div class="report-table-card">
+          <h3 id="rpt-sector-title">Pipeline by Sector</h3>
+          <table class="report-table"><thead><tr><th>Sector</th><th>Deals</th><th>Pipeline (THB)</th><th>Weighted (THB)</th><th>Win Rate</th></tr></thead><tbody id="rptSectorBody"></tbody></table>
+        </div>
+        <div class="report-table-card">
+          <h3 id="rpt-service-title">Pipeline by Service</h3>
+          <table class="report-table"><thead><tr><th>Service</th><th>Deals</th><th>Pipeline (THB)</th><th>2026 Target (M)</th><th>Coverage</th></tr></thead><tbody id="rptServiceBody"></tbody></table>
+        </div>
+        <div class="report-table-card">
+          <h3 id="rpt-top-title">Top 10 Deals</h3>
+          <table class="report-table"><thead><tr><th>#</th><th>Client</th><th>Service</th><th>Stage</th><th>Revenue</th><th>Weighted</th><th>Close Date</th><th>Owner</th></tr></thead><tbody id="rptTopBody"></tbody></table>
+        </div>
+        <div class="report-table-card" id="dangerSection">
+          <h3>Data Management</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Reset all pipeline data to demo defaults. This cannot be undone.</p>
+          <div id="dangerConfirm" style="display:none;">
+            <input type="text" id="resetInput" placeholder='Type "RESET" to confirm' style="padding:8px 12px;border:1.5px solid var(--pmc-red-300);border-radius:8px;font-size:13px;margin-right:8px;"/>
+            <button class="btn btn-primary" onclick="doReset()">Confirm Reset</button>
+            <button class="btn btn-secondary btn-sm" onclick="hideResetConfirm()" style="margin-left:6px;">Cancel</button>
+          </div>
+        </div>
+        <pre id="summaryText" style="display:none;"></pre>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /app -->
+
+<!-- DEAL MODAL -->
+<div class="modal-backdrop" id="dealModal" style="display:none;" onclick="closeDealModal()">
 <div class="modal" onclick="event.stopPropagation()">
-  <h2 id="modalTitle">Edit Opportunity</h2>
+  <h2 id="modalTitle">New Opportunity</h2>
   <div class="form-grid">
-    <div class="form-group form-full">
-      <label>Client Name *</label>
-      <input type="text" id="f_name" required/>
+    <div class="form-group full"><label>Client Name *</label><input id="f_name" type="text" required placeholder="e.g. Kasikorn Bank"/></div>
+    <div class="form-group"><label>Sector</label>
+      <select id="f_sector"><option>Banking</option><option>Insurance</option><option>Retail/eCommerce</option><option>Government</option><option>Healthcare</option><option>Telecom</option><option>Other</option></select>
     </div>
-    <div class="form-group">
-      <label>Short Name / Code</label>
-      <input type="text" id="f_short"/>
+    <div class="form-group"><label>Service</label>
+      <select id="f_service"><option>Survey</option><option>Express</option><option>Matching</option><option>Value-Added</option><option>Commerce</option></select>
     </div>
-    <div class="form-group">
-      <label>Sector</label>
-      <input type="text" id="f_sector" list="sectorList"/>
-      <datalist id="sectorList"></datalist>
+    <div class="form-group"><label>Stage</label>
+      <select id="f_stage"><option>New Lead</option><option>Discovery</option><option>In Discussion</option><option>Active/Verbal</option><option>On Hold</option></select>
     </div>
-    <div class="form-group form-full">
-      <label>Use Case / Description</label>
-      <textarea id="f_useCase" rows="3"></textarea>
+    <div class="form-group"><label>Priority</label>
+      <select id="f_priority"><option>P1</option><option>P2</option><option>P3</option></select>
     </div>
-    <div class="form-group">
-      <label>Service</label>
-      <select id="f_service">
-        <option>Survey</option><option>Express</option><option>Matching</option><option>Value-Added</option><option>Commerce</option>
-      </select>
+    <div class="form-group"><label>Revenue (THB)</label><input id="f_revenue" type="number" min="0" step="100000" placeholder="5000000"/></div>
+    <div class="form-group"><label>Close Date</label><input id="f_close_date" type="date"/></div>
+    <div class="form-group"><label>Owner</label><input id="f_owner" type="text" placeholder="e.g. Kanin"/></div>
+    <div class="form-group"><label>Competitive Risk</label>
+      <select id="f_competitive_risk"><option>Low</option><option>Medium</option><option>High</option></select>
     </div>
-    <div class="form-group">
-      <label>Stage</label>
-      <select id="f_stage">
-        <option>Active/Verbal</option><option>In Discussion</option><option>On Hold</option><option>Discovery</option><option>New Lead</option>
-      </select>
+    <div class="form-group"><label>Contact</label><input id="f_contact_name" type="text"/></div>
+    <div class="form-group"><label>Contact Email</label><input id="f_contact_email" type="email"/></div>
+    <div class="form-group"><label>Contact Phone</label><input id="f_contact_phone" type="text"/></div>
+    <div class="form-group"><label>Jobs per Year</label><input id="f_jobs_year" type="number" min="0"/></div>
+    <div class="form-group"><label>Budget Status</label>
+      <select id="f_budget_status"><option>Unknown</option><option>Confirmed</option><option>Pending</option><option>No Budget</option></select>
     </div>
-    <div class="form-group">
-      <label>Revenue THB</label>
-      <input type="number" id="f_revenue" min="0"/>
-    </div>
-    <div class="form-group">
-      <label>Fee Structure</label>
-      <input type="text" id="f_fee"/>
-    </div>
-    <div class="form-group">
-      <label>Volume (transactions)</label>
-      <input type="number" id="f_volume" min="0"/>
-    </div>
-    <div class="form-group">
-      <label>Owner</label>
-      <input type="text" id="f_owner" list="ownerList"/>
-      <datalist id="ownerList"></datalist>
-    </div>
-    <div class="form-group">
-      <label>Priority</label>
-      <select id="f_priority">
-        <option>P1</option><option>P2</option><option>P3</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Competitive Risk</label>
-      <select id="f_competitive_risk">
-        <option>Low</option><option>Medium</option><option>High</option>
-      </select>
-    </div>
-    <div class="form-group form-full">
-      <label>Sales Effort: <span id="effortLabel">3</span>/5</label>
-      <input type="range" id="f_effort" min="1" max="5" value="3" oninput="document.getElementById('effortLabel').textContent=this.value"/>
-      <div class="effort-labels"><span>1 Easy</span><span>3 Medium</span><span>5 Hard</span></div>
-    </div>
-    <div class="form-group">
-      <label>Est. Close Date</label>
-      <input type="date" id="f_close_date"/>
-    </div>
-    <div class="form-group">
-      <label>Added By</label>
-      <input type="text" id="f_created_by"/>
-    </div>
-    <div class="form-group form-full">
-      <label>Notes</label>
-      <textarea id="f_notes" rows="5"></textarea>
-    </div>
+    <div class="form-group"><label>Decision Maker</label><input id="f_decision_maker" type="text"/></div>
+    <div class="form-group"><label>Next Action</label><input id="f_next_action" type="text"/></div>
+    <div class="form-group"><label>Added By</label><input id="f_created_by" type="text"/></div>
+    <div class="form-group full"><label>Notes</label><textarea id="f_notes" rows="4"></textarea></div>
   </div>
   <div class="modal-footer">
     <button class="btn btn-secondary" onclick="closeDealModal()">Cancel</button>
-    <button class="btn btn-primary" id="modalSaveBtn" onclick="saveDeal()">Save Changes</button>
+    <button class="btn btn-primary" id="modalSaveBtn" onclick="saveDeal()">Save</button>
   </div>
 </div>
 </div>
@@ -618,9 +592,7 @@ input[type=range]{width:100%;accent-color:var(--pmc-navy-700);}
 <div class="modal" onclick="event.stopPropagation()" style="max-width:500px;">
   <h2 id="activityTitle">Activity Log</h2>
   <div id="activityList"></div>
-  <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeActivityModal()">Close</button>
-  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeActivityModal()">Close</button></div>
 </div>
 </div>
 
@@ -628,25 +600,59 @@ input[type=range]{width:100%;accent-color:var(--pmc-navy-700);}
 <div class="modal-backdrop" id="importModal" style="display:none;" onclick="closeImportModal()">
 <div class="modal" onclick="event.stopPropagation()" style="max-width:580px;">
   <h2>Import CSV / Excel</h2>
-  <p style="font-size:12px;color:#475569;margin-bottom:12px;">Download the template, fill it in Excel or CSV format, then upload here. Existing deals with the same name will be updated.</p>
-  <a href="/api/template/csv" class="btn btn-secondary btn-sm" style="margin-bottom:16px;display:inline-flex;">⬇ Download Template CSV</a>
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Download the template, fill it in Excel or CSV, then upload. Existing deals with the same name will be updated.</p>
+  <a href="/api/template/csv" class="btn btn-secondary btn-sm" style="margin-bottom:16px;">⬇ Download Template CSV</a>
   <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
     <p>📁 Click to browse or drag & drop CSV / XLSX</p>
     <input type="file" id="fileInput" accept=".csv,.xlsx" style="display:none" onchange="handleFileSelect(event)"/>
   </div>
   <div id="previewSection" style="display:none;margin-top:12px;">
-    <p style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:6px;">Preview (first 5 rows):</p>
+    <p style="font-size:11px;font-weight:600;color:var(--pmc-navy-800);margin-bottom:6px;">Preview (first 5 rows):</p>
     <div class="preview-table" id="previewTable"></div>
     <button class="btn btn-primary" id="importBtn" onclick="doImport()" style="margin-top:8px;">Import Rows</button>
   </div>
-  <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
-  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeImportModal()">Cancel</button></div>
 </div>
 </div>
 
+<div id="toastContainer"></div>
+
 <script>
-// ─── State ───────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════
+const STAGE_PROB = {'Active/Verbal':0.80,'In Discussion':0.55,'Discovery':0.30,'New Lead':0.10,'On Hold':0.10};
+const STAGE_NUM  = {'Active/Verbal':1,'In Discussion':2,'On Hold':3,'Discovery':4,'New Lead':5};
+const STAGE_COLORS_MAP = {
+  'Active/Verbal':'#c98a00','In Discussion':'#243a6e','Discovery':'#34508c','New Lead':'#1a2d5a','On Hold':'#8b93a6'
+};
+const SERVICE_COLORS = {'Survey':'#1f8a5b','Express':'#243a6e','Matching':'#c98a00','Value-Added':'#7c3aed','Commerce':'#e8000d'};
+const FIVE_YEAR_TARGETS = {
+  Survey:{2026:12,2027:30,2028:60},Express:{2026:5,2027:12,2028:25},
+  Matching:{2026:3,2027:8,2028:18},'Value-Added':{2026:2,2027:5,2028:10}
+};
+const LANG = {
+  en:{
+    dashboard:'Dashboard',pipeline:'Pipeline',analysis:'Analysis',reports:'Reports',
+    management:'Management',salesperson:'Salesperson',
+    kpiPipeline:'Open pipeline',kpiWeighted:'Weighted forecast',kpiWin:'Win rate',kpiAvg:'Avg deal size',
+    newOpp:'New Opportunity',forecastTitle:'Forecast by Month',funnelTitle:'Pipeline Funnel',
+    lbTitle:'Team Leaderboard',attnTitle:'Needs Attention',rptSector:'Pipeline by Sector',
+    rptService:'Pipeline by Service',rptTop:'Top 10 Deals'
+  },
+  th:{
+    dashboard:'แดชบอร์ด',pipeline:'ไปป์ไลน์',analysis:'การวิเคราะห์',reports:'รายงาน',
+    management:'ผู้บริหาร',salesperson:'พนักงานขาย',
+    kpiPipeline:'มูลค่าไปป์ไลน์',kpiWeighted:'คาดการณ์แบบถ่วงน้ำหนัก',kpiWin:'อัตราชนะ',kpiAvg:'ขนาดดีลเฉลี่ย',
+    newOpp:'โอกาสใหม่',forecastTitle:'คาดการณ์รายเดือน',funnelTitle:'ช่องทางการขาย',
+    lbTitle:'อันดับทีม',attnTitle:'ต้องการความใส่ใจ',rptSector:'ตามภาคธุรกิจ',
+    rptService:'ตามบริการ',rptTop:'10 ดีลแรก'
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
 let allDeals = [];
 let filteredDeals = [];
 let editingDealId = null;
@@ -654,114 +660,106 @@ let importFile = null;
 let sortField = 'stageNum';
 let sortDir = 1;
 let currentPivot = 1;
+let currentView = 'board';  // 'board' | 'table'
+let currentRole = 'management'; // 'management' | 'salesperson'
+let currentLang = 'en';
+let currentUserName = '';
+let currentTab = 'dashboard';
 window.charts = {};
 
-const STAGE_NUM = {
-  'Active/Verbal':1,'In Discussion':2,'On Hold':3,'Discovery':4,'New Lead':5
-};
-const STAGE_COLORS = {
-  1:'#10B981',2:'#3B82F6',3:'#E53E3E',4:'#F59E0B',5:'#94A3B8'
-};
-const SERVICE_COLORS = {
-  'Survey':'#10B981','Express':'#3B82F6','Matching':'#F59E0B','Value-Added':'#8B5CF6','Commerce':'#EC4899'
-};
-const FIVE_YEAR_TARGETS = {
-  Survey:  {2026:12,2027:30,2028:60},
-  Express: {2026:5,2027:12,2028:25},
-  Matching:{2026:3,2027:8,2028:18},
-  'Value-Added':{2026:2,2027:5,2028:10}
-};
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+function fmtThb(v){
+  if(!v||isNaN(v)) return '–';
+  if(v>=1e9) return '฿'+(v/1e9).toFixed(1)+'B';
+  if(v>=1e6) return '฿'+(v/1e6).toFixed(1)+'M';
+  if(v>=1e3) return '฿'+(v/1e3).toFixed(0)+'K';
+  return '฿'+v.toFixed(0);
+}
+function fmtThbFull(v){
+  if(!v||isNaN(v)) return '–';
+  return '฿'+Number(v).toLocaleString();
+}
+function weighted(deal){ return (deal.revenue||0)*(STAGE_PROB[deal.stage]||0); }
+function initials(name){ if(!name) return '?'; const p=name.trim().split(' '); return (p[0][0]+(p[1]?p[1][0]:'')).toUpperCase(); }
+function daysDiff(dateStr){ if(!dateStr) return null; return Math.round((new Date(dateStr)-new Date())/86400000); }
+function destroyChart(key){ if(window.charts[key]){ try{window.charts[key].destroy();}catch(e){} delete window.charts[key];} }
+function t(key){ return LANG[currentLang][key]||key; }
+function getDeals(){ return currentRole==='salesperson' ? allDeals.filter(d=>d.owner&&currentUserName&&d.owner.toLowerCase().includes(currentUserName.split(' ')[0].toLowerCase())) : allDeals; }
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
-
+// ═══════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════
 async function checkAuth(){
   try{
-    const res = await fetch('/api/me');
-    if(res.ok){
-      const d = await res.json();
-      if(d.name) setUserName(d.name);
-      return true;
-    }
+    const res=await fetch('/api/me');
+    if(res.ok){ const d=await res.json(); if(d.authenticated&&d.name){setUserName(d.name);return true;} }
     return false;
-  }catch(e){ return false; }
+  }catch(e){return false;}
 }
 
 function setUserName(name){
-  const el = document.getElementById('userName');
-  if(el) el.textContent = name;
-  // Update avatar initials
-  const av = document.getElementById('userAvatar');
-  if(av && name){
-    const parts = name.trim().split(' ');
-    av.textContent = (parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
-  }
+  currentUserName=name;
+  const el=document.getElementById('userName'); if(el) el.textContent=name;
+  const av=document.getElementById('userAvatar'); if(av) av.textContent=initials(name);
 }
 
 function showGreeting(name){
-  // Toast greeting
-  const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;top:70px;right:24px;background:#1a3a5c;color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.3);transition:opacity 0.5s';
-  toast.textContent = `Welcome, ${name}! 👋`;
-  document.body.appendChild(toast);
-  setTimeout(()=>{ toast.style.opacity='0'; setTimeout(()=>toast.remove(), 500); }, 3000);
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;top:70px;right:24px;background:var(--pmc-navy-800);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:9999;box-shadow:var(--shadow-md);transition:opacity .5s;';
+  d.textContent=`Welcome, ${name}! 👋`;
+  document.body.appendChild(d);
+  setTimeout(()=>{d.style.opacity='0';setTimeout(()=>d.remove(),500);},3000);
 }
 
 async function doLogin(e){
   e.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('loginError');
-  btn.textContent = 'Signing in…'; btn.disabled = true; err.style.display='none';
+  const btn=document.getElementById('loginBtn'),err=document.getElementById('loginError');
+  btn.textContent='Signing in…';btn.disabled=true;err.style.display='none';
   try{
-    const res = await fetch('/api/login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        username: document.getElementById('loginUser').value.trim(),
-        password: document.getElementById('loginPass').value
-      })
-    });
+    const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:document.getElementById('loginUser').value.trim(),password:document.getElementById('loginPass').value})});
     if(res.ok){
-      const d = await res.json();
+      const d=await res.json();
       document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('loginPass').value = '';
-      if(d.name){ setUserName(d.name); showGreeting(d.name); }
+      document.getElementById('loginPass').value='';
+      if(d.name){setUserName(d.name);showGreeting(d.name);}
       await initApp();
     } else {
       err.style.display='block';
       document.getElementById('loginPass').value='';
       document.getElementById('loginPass').focus();
     }
-  }catch(ex){
-    err.textContent='Connection error. Please try again.'; err.style.display='block';
-  }
-  btn.textContent='Sign In →'; btn.disabled=false;
+  }catch(ex){err.textContent='Connection error.';err.style.display='block';}
+  btn.textContent='Sign in →';btn.disabled=false;
 }
 
 async function doLogout(){
   await fetch('/api/logout',{method:'POST'});
   document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
   document.getElementById('loginError').style.display='none';
   document.getElementById('loginUser').focus();
 }
 
-// Intercept all fetch calls — redirect to login on 401
-const _origFetch = window.fetch;
-window.fetch = async function(...args){
-  const res = await _origFetch(...args);
+const _origFetch=window.fetch;
+window.fetch=async function(...args){
+  const res=await _origFetch(...args);
   if(res.status===401){
-    const path = typeof args[0]==='string' ? args[0] : '';
-    if(!path.includes('/api/login') && !path.includes('/api/me') && !path.includes('/api/logout')){
-      doLogout();
-    }
+    const path=typeof args[0]==='string'?args[0]:'';
+    if(!path.includes('/api/login')&&!path.includes('/api/me')&&!path.includes('/api/logout')) doLogout();
   }
   return res;
 };
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
-  const authed = await checkAuth();
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',async()=>{
+  const authed=await checkAuth();
   if(authed){
     document.getElementById('loginScreen').classList.add('hidden');
     await initApp();
@@ -771,252 +769,598 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function initApp(){
+  document.getElementById('app').classList.add('visible');
   await loadDeals();
   setupDragDrop();
-  document.addEventListener('keydown', e => {
-    if(e.key==='Escape'){
-      closeDealModal(); closeActivityModal(); closeImportModal();
-    }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeDealModal();closeActivityModal();closeImportModal();}
   });
 }
 
 async function loadDeals(){
   try{
-    let res = await fetch('/api/deals');
-    allDeals = await res.json();
+    let res=await fetch('/api/deals');
+    allDeals=await res.json();
     if(allDeals.length===0){
       await fetch('/api/seed',{method:'POST'});
-      res = await fetch('/api/deals');
-      allDeals = await res.json();
+      res=await fetch('/api/deals');
+      allDeals=await res.json();
     }
-    document.getElementById('syncTime').textContent = 'Synced: '+new Date().toLocaleTimeString();
+    document.getElementById('syncTime').textContent='Synced '+new Date().toLocaleTimeString();
     populateFilters();
-    renderDashboard();
-    renderPipeline();
-    renderClientCards();
-    renderServicesTab();
-    renderReports();
-    // Only render pivot if the clients tab is visible (canvas exists in DOM)
-    if(document.getElementById('pivotChart')) showPivot(currentPivot, document.querySelector('.pivot-btn.active'));
-  }catch(e){
-    toast('Error loading data: '+e.message,'error');
-  }
+    applyFilters();
+    renderAll();
+  }catch(e){toast('Failed to load data','error');}
 }
 
-// saveUser() removed — user name now comes from the server session
-function getUser(){return document.getElementById('userName')?.textContent||'Unknown';}
-
-// ─── Tab navigation ───────────────────────────────────────────────────────────
-function showTab(tab){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('#sidebar nav a').forEach(a=>a.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('nav-'+tab).classList.add('active');
-  if(tab==='reports') renderReports();
-  if(tab==='clients') {
-    renderClientCards();
-    setTimeout(()=>showPivot(currentPivot,document.querySelectorAll('.pivot-btn')[currentPivot-1]),50);
-  }
-  if(tab==='services') renderServicesTab();
+function renderAll(){
+  renderDashboard();
+  if(currentTab==='pipeline') renderPipeline();
+  if(currentTab==='analysis') renderAnalysis();
+  if(currentTab==='reports') renderReports();
 }
 
-// ─── Format helpers ───────────────────────────────────────────────────────────
-function fmtThb(v){
-  if(!v||isNaN(v)) return '฿0';
-  v=Number(v);
-  if(v>=10000000) return '฿'+( v/1000000).toFixed(1)+'M';
-  if(v>=1000000)  return '฿'+(v/1000000).toFixed(1)+'M';
-  if(v>=1000)     return '฿'+Math.round(v/1000)+'K';
-  return '฿'+Math.round(v);
-}
-function fmtThbFull(v){
-  if(!v) return '฿0';
-  return 'THB '+(Number(v)||0).toLocaleString();
-}
-function fmtM(v){return (v/1000000).toFixed(1)+'M';}
-
-function stageBadge(stage){
-  const n=STAGE_NUM[stage]||5;
-  return `<span class="badge badge-stage${n}">${stage||'–'}</span>`;
-}
-function priorityBadge(p){
-  if(!p) return '';
-  return `<span class="badge badge-${p.toLowerCase()}">${p}</span>`;
-}
-function serviceBadge(s){
-  if(!s) return '';
-  const cls=s.toLowerCase().replace(/[^a-z]/g,'-');
-  return `<span class="badge badge-${cls}">${s}</span>`;
-}
-function riskBadge(r){
-  if(!r) return '';
-  const cls=r.toLowerCase();
-  return `<span class="risk-dot risk-${cls}"></span>${r}`;
+// ═══════════════════════════════════════════════════════════════
+// ROLE / LANG
+// ═══════════════════════════════════════════════════════════════
+function setRole(role,btn){
+  currentRole=role;
+  document.querySelectorAll('#roleToggle .tb-seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('userRoleLabel').textContent=t(role);
+  applyFilters(); renderAll();
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-function renderDashboard(){
-  const total=allDeals.reduce((s,d)=>s+(d.revenue||0),0);
-  const active=allDeals.filter(d=>d.stageNum<=2).length;
-  const p1=allDeals.filter(d=>d.priority==='P1').length;
-  const top=allDeals.reduce((a,b)=>(b.revenue||0)>(a.revenue||0)?b:a,{revenue:0,name:'–'});
-  const svcs=new Set(allDeals.map(d=>d.service).filter(Boolean)).size;
-  const surveyPipe=allDeals.filter(d=>d.service==='Survey').reduce((s,d)=>s+(d.revenue||0),0);
-  const gap=12000000-surveyPipe;
-
-  document.getElementById('kpiGrid').innerHTML=`
-    <div class="kpi-card"><div class="label">Total Pipeline</div><div class="value">${fmtThb(total)}</div><div class="sub">${allDeals.length} accounts</div></div>
-    <div class="kpi-card"><div class="label">Active Deals</div><div class="value">${active}</div><div class="sub">Stage 1+2</div></div>
-    <div class="kpi-card"><div class="label">P1 Accounts</div><div class="value">${p1}</div><div class="sub">Priority 1</div></div>
-    <div class="kpi-card"><div class="label">Top Deal</div><div class="value" style="font-size:13px;">${top.short||top.name||'–'}</div><div class="sub">${fmtThb(top.revenue)}</div></div>
-    <div class="kpi-card"><div class="label">Services</div><div class="value">${svcs}</div><div class="sub">in pipeline</div></div>
-    <div class="kpi-card"><div class="label">Survey Gap 2026</div><div class="value" style="color:${gap>0?'var(--red)':'var(--green)'}">${gap>0?'-':''}${fmtThb(Math.abs(gap))}</div><div class="sub">vs THB 12M target</div></div>
-  `;
-
-  // Funnel
-  const stages=['Active/Verbal','In Discussion','On Hold','Discovery','New Lead'];
-  const stageRevs=stages.map(s=>allDeals.filter(d=>d.stage===s).reduce((a,d)=>a+(d.revenue||0),0));
-  const stageCounts=stages.map(s=>allDeals.filter(d=>d.stage===s).length);
-  destroyChart('funnelChart');
-  window.charts.funnelChart=new Chart(document.getElementById('funnelChart'),{
-    type:'bar',
-    data:{
-      labels:stages,
-      datasets:[{data:stageRevs,backgroundColor:['#10B981','#3B82F6','#E53E3E','#F59E0B','#94A3B8'],borderRadius:6}]
-    },
-    options:{
-      indexAxis:'y',responsive:true,plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:c=>`${fmtThb(c.raw)} · ${stageCounts[c.dataIndex]} deals`}}},
-      scales:{x:{ticks:{callback:v=>fmtThb(v)},grid:{display:false}},y:{grid:{display:false}}}
+function setLang(lang,btn){
+  currentLang=lang;
+  document.querySelectorAll('.tb-seg').forEach(seg=>{
+    if(seg.querySelector('button')&&seg.querySelector('button').textContent.match(/^(EN|TH)$/)){
+      seg.querySelectorAll('.tb-seg-btn').forEach(b=>b.classList.remove('active'));
     }
   });
-
-  // Service donut
-  const svcMap={};
-  allDeals.forEach(d=>{if(d.service){svcMap[d.service]=(svcMap[d.service]||0)+(d.revenue||0);}});
-  destroyChart('serviceChart');
-  window.charts.serviceChart=new Chart(document.getElementById('serviceChart'),{
-    type:'doughnut',
-    data:{labels:Object.keys(svcMap),datasets:[{data:Object.values(svcMap),backgroundColor:Object.keys(svcMap).map(k=>SERVICE_COLORS[k]||'#94A3B8'),hoverOffset:4}]},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},tooltip:{callbacks:{label:c=>`${c.label}: ${fmtThb(c.raw)}`}}}}
-  });
-
-  // Sector bar
-  const secMap={};
-  allDeals.forEach(d=>{if(d.sector){secMap[d.sector]=(secMap[d.sector]||0)+(d.revenue||0);}});
-  const secSorted=Object.entries(secMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  destroyChart('sectorChart');
-  window.charts.sectorChart=new Chart(document.getElementById('sectorChart'),{
-    type:'bar',
-    data:{labels:secSorted.map(s=>s[0]),datasets:[{data:secSorted.map(s=>s[1]),backgroundColor:'#3B82F6',borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${fmtThb(c.raw)}`}}},
-      scales:{x:{ticks:{callback:v=>fmtThb(v)},grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
-  });
-
-  // Top 5
-  const top5=[...allDeals].sort((a,b)=>(b.revenue||0)-(a.revenue||0)).slice(0,5);
-  document.getElementById('top5Body').innerHTML=top5.map((d,i)=>`
-    <tr><td>${i+1}</td><td><strong>${d.name}</strong></td><td>${stageBadge(d.stage)}</td>
-    <td style="font-weight:700;color:var(--pmc-navy-700)">${fmtThb(d.revenue)}</td>
-    <td>${d.owner||'–'}</td><td>${priorityBadge(d.priority)}</td></tr>`).join('');
+  btn.classList.add('active');
+  applyLang();
+  renderAll();
 }
 
-// ─── Pipeline ─────────────────────────────────────────────────────────────────
+function applyLang(){
+  document.getElementById('nav-dashboard').textContent=t('dashboard');
+  document.getElementById('nav-pipeline').textContent=t('pipeline');
+  document.getElementById('nav-analysis').textContent=t('analysis');
+  document.getElementById('nav-reports').textContent=t('reports');
+  document.getElementById('nav-management').textContent=t('management');
+  document.getElementById('nav-salesperson').textContent=t('salesperson');
+  document.getElementById('btn-new-opp').textContent=t('newOpp');
+  document.getElementById('userRoleLabel').textContent=t(currentRole);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function switchTab(tab,el){
+  currentTab=tab;
+  document.querySelectorAll('.sb-nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const titles={dashboard:t('dashboard'),pipeline:t('pipeline'),analysis:t('analysis'),reports:t('reports')};
+  document.getElementById('pageTitle').textContent=titles[tab]||tab;
+  if(tab==='pipeline') renderPipeline();
+  if(tab==='analysis') renderAnalysis();
+  if(tab==='reports') renderReports();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════════════════
 function populateFilters(){
-  const sectors=[...new Set(allDeals.map(d=>d.sector).filter(Boolean))].sort();
-  const sf=document.getElementById('sectorFilter');
-  sf.innerHTML='<option value="">All Sectors</option>'+sectors.map(s=>`<option>${s}</option>`).join('');
   const owners=[...new Set(allDeals.map(d=>d.owner).filter(Boolean))].sort();
-  document.getElementById('ownerList').innerHTML=owners.map(o=>`<option>${o}</option>`).join('');
-  document.getElementById('sectorList').innerHTML=sectors.map(s=>`<option>${s}</option>`).join('');
+  const sectors=[...new Set(allDeals.map(d=>d.sector).filter(Boolean))].sort();
+  const of=document.getElementById('ownerFilter');
+  const sf=document.getElementById('sectorFilter');
+  const curO=of.value,curS=sf.value;
+  of.innerHTML='<option value="">All Owners</option>'+owners.map(o=>`<option>${o}</option>`).join('');
+  sf.innerHTML='<option value="">All Sectors</option>'+sectors.map(s=>`<option>${s}</option>`).join('');
+  if(curO) of.value=curO;
+  if(curS) sf.value=curS;
 }
 
-function filterPipeline(){
-  const q=document.getElementById('searchBox').value.toLowerCase();
-  const st=document.getElementById('stageFilter').value;
-  const sv=document.getElementById('serviceFilter').value;
-  const sec=document.getElementById('sectorFilter').value;
-  const pr=document.getElementById('priorityFilter').value;
-  filteredDeals=allDeals.filter(d=>{
-    if(q&&!`${d.name} ${d.short} ${d.sector} ${d.owner} ${d.notes}`.toLowerCase().includes(q)) return false;
-    if(st&&d.stage!==st) return false;
-    if(sv&&d.service!==sv) return false;
-    if(sec&&d.sector!==sec) return false;
-    if(pr&&d.priority!==pr) return false;
-    return true;
-  });
-  renderPipelineTable();
+function applyFilters(){
+  const base=getDeals();
+  const o=document.getElementById('ownerFilter')?.value||'';
+  const st=document.getElementById('stageFilter')?.value||'';
+  const se=document.getElementById('sectorFilter')?.value||'';
+  const p=document.getElementById('priorityFilter')?.value||'';
+  const gs=document.getElementById('globalSearch')?.value?.toLowerCase()||'';
+  filteredDeals=base.filter(d=>
+    (!o||d.owner===o)&&(!st||d.stage===st)&&(!se||d.sector===se)&&
+    (!p||d.priority===p)&&
+    (!gs||(d.name||'').toLowerCase().includes(gs)||(d.owner||'').toLowerCase().includes(gs)||(d.sector||'').toLowerCase().includes(gs))
+  );
+  const rc=document.getElementById('resultsCount');
+  if(rc) rc.textContent=filteredDeals.length+' deal'+(filteredDeals.length!==1?'s':'');
 }
 
 function clearFilters(){
-  document.getElementById('searchBox').value='';
-  document.getElementById('stageFilter').value='';
-  document.getElementById('serviceFilter').value='';
-  document.getElementById('sectorFilter').value='';
-  document.getElementById('priorityFilter').value='';
-  filterPipeline();
+  ['ownerFilter','stageFilter','sectorFilter','priorityFilter'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const gs=document.getElementById('globalSearch'); if(gs) gs.value='';
+  applyFilters(); renderPipeline();
+}
+
+function onGlobalSearch(){ applyFilters(); renderPipeline(); }
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const deals=getDeals();
+  const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
+  const wtd=deals.reduce((s,d)=>s+weighted(d),0);
+  const won=deals.filter(d=>d.stage==='Active/Verbal').length;
+  const rate=deals.length?Math.round((won/deals.length)*100):0;
+  const avg=deals.length?total/deals.length:0;
+
+  // Bell dot
+  const attn=deals.filter(d=>d.competitive_risk==='High'||(d.close_date&&daysDiff(d.close_date)<=30&&daysDiff(d.close_date)>=0));
+  const bellDot=document.getElementById('bellDot');
+  if(bellDot) bellDot.style.display=attn.length?'block':'none';
+
+  // KPI cards
+  const kpiGrid=document.getElementById('kpiGrid');
+  if(kpiGrid) kpiGrid.innerHTML=`
+    <div class="kpi-card accent">
+      <div class="kpi-icon">💼</div>
+      <div class="kpi-val">${fmtThb(total)}</div>
+      <div class="kpi-label">${t('kpiPipeline')}</div>
+      <div class="kpi-delta neutral">${deals.length} active deals</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🎯</div>
+      <div class="kpi-val">${fmtThb(wtd)}</div>
+      <div class="kpi-label">${t('kpiWeighted')}</div>
+      <div class="kpi-delta neutral">${Math.round(wtd/total*100)||0}% of pipeline</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-val">${rate}%</div>
+      <div class="kpi-label">${t('kpiWin')}</div>
+      <div class="kpi-delta neutral">${won} in Active/Verbal</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-val">${fmtThb(avg)}</div>
+      <div class="kpi-label">${t('kpiAvg')}</div>
+      <div class="kpi-delta neutral">${deals.length} total deals</div>
+    </div>
+  `;
+
+  renderForecastChart(deals);
+  renderFunnelChart(deals);
+  renderLeaderboard(deals);
+  renderAttentionDeals(deals);
+}
+
+function renderForecastChart(deals){
+  const el=document.getElementById('forecastChart');
+  if(!el) return;
+  // Group by month
+  const months={};
+  deals.forEach(d=>{
+    if(!d.close_date) return;
+    const m=d.close_date.slice(0,7);
+    if(!months[m]){ months[m]={open:0,wtd:0}; }
+    months[m].open+=(d.revenue||0);
+    months[m].wtd+=weighted(d);
+  });
+  const keys=Object.keys(months).sort().slice(-8);
+  if(!keys.length){ el.innerHTML='<div class="empty-state">No deals with close dates</div>'; return; }
+  const maxVal=Math.max(...keys.map(k=>months[k].open),1);
+  const barH=28;const gap=8;const totalH=keys.length*(barH+gap);
+  let svg=`<svg width="100%" height="${totalH+20}" xmlns="http://www.w3.org/2000/svg" style="font-family:var(--font-body)">`;
+  keys.forEach((k,i)=>{
+    const y=i*(barH+gap);
+    const openW=`${(months[k].open/maxVal*100).toFixed(1)}%`;
+    const wtdW=`${(months[k].wtd/maxVal*100).toFixed(1)}%`;
+    const label=new Date(k+'-01').toLocaleDateString('en',{month:'short',year:'2-digit'});
+    svg+=`
+      <text x="0" y="${y+barH*.7}" font-size="11" fill="var(--text-faint)">${label}</text>
+      <rect x="40" y="${y}" width="${openW}" height="${barH}" rx="5" fill="var(--pmc-line-200)"/>
+      <rect x="40" y="${y}" width="${wtdW}" height="${barH}" rx="5" fill="var(--pmc-red-500)" opacity=".85"/>
+      <text x="44" y="${y+barH*.7}" font-size="11" fill="var(--pmc-navy-900)" font-weight="600">${fmtThb(months[k].open)}</text>
+    `;
+  });
+  svg+='</svg>';
+  el.innerHTML=svg;
+}
+
+function renderFunnelChart(deals){
+  const el=document.getElementById('funnelChart');
+  if(!el) return;
+  const order=['New Lead','Discovery','In Discussion','Active/Verbal','On Hold'];
+  const counts={};const vals={};
+  order.forEach(s=>{counts[s]=0;vals[s]=0;});
+  deals.forEach(d=>{if(order.includes(d.stage)){counts[d.stage]++;vals[d.stage]+=(d.revenue||0);}});
+  const maxC=Math.max(...Object.values(counts),1);
+  let html='';
+  order.forEach(s=>{
+    const pct=Math.max((counts[s]/maxC)*100,4);
+    const bg=STAGE_COLORS_MAP[s]||'#8b93a6';
+    html+=`<div class="funnel-row">
+      <div class="funnel-label">${s}</div>
+      <div class="funnel-bar-wrap">
+        <div class="funnel-bar" style="width:${pct}%;background:${bg}">
+          <span class="funnel-bar-text">${fmtThb(vals[s])}</span>
+        </div>
+      </div>
+      <div class="funnel-count">${counts[s]}</div>
+    </div>`;
+  });
+  el.innerHTML=html||'<div class="empty-state">No data</div>';
+}
+
+function renderLeaderboard(deals){
+  const el=document.getElementById('leaderboardChart');
+  if(!el) return;
+  const owners=[...new Set(deals.map(d=>d.owner).filter(Boolean))];
+  const lb=owners.map(o=>{
+    const od=deals.filter(d=>d.owner===o);
+    return{name:o,pipeline:od.reduce((s,d)=>s+(d.revenue||0),0),deals:od.length};
+  }).sort((a,b)=>b.pipeline-a.pipeline).slice(0,7);
+  if(!lb.length){ el.innerHTML='<div class="empty-state">No data</div>'; return; }
+  const max=lb[0].pipeline||1;
+  let html='';
+  lb.forEach((r,i)=>{
+    const pct=(r.pipeline/max*100).toFixed(0);
+    html+=`<div class="lb-row">
+      <div class="lb-rank">${i+1}</div>
+      <div class="lb-name" title="${r.name}">${r.name.split(' ')[0]}</div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%"></div></div>
+      <div class="lb-val">${fmtThb(r.pipeline)}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderAttentionDeals(deals){
+  const el=document.getElementById('attentionDeals');
+  if(!el) return;
+  const attn=deals.filter(d=>
+    d.competitive_risk==='High'||(d.close_date&&daysDiff(d.close_date)<=30&&daysDiff(d.close_date)>=0)
+  ).slice(0,6);
+  if(!attn.length){ el.innerHTML='<div class="empty-state">No urgent items 🎉</div>'; return; }
+  let html='';
+  attn.forEach(d=>{
+    const isHigh=d.competitive_risk==='High';
+    const dd=daysDiff(d.close_date);
+    const reason=isHigh?'High competitive risk':(dd!==null?`Closes in ${dd}d`:'Closing soon');
+    html+=`<div class="attn-item">
+      <div class="attn-dot ${isHigh?'high':'med'}"></div>
+      <div>
+        <div class="attn-client">${d.name} <span style="font-size:11px;color:var(--text-faint);">${fmtThb(d.revenue)}</span></div>
+        <div class="attn-meta">${reason} · ${d.stage} · ${d.owner||'–'}</div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PIPELINE
+// ═══════════════════════════════════════════════════════════════
+function setView(view,btn){
+  currentView=view;
+  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('boardView').style.display=view==='board'?'flex':'none';
+  document.getElementById('tableView').style.display=view==='table'?'block':'none';
+  renderPipeline();
 }
 
 function renderPipeline(){
-  filteredDeals=[...allDeals];
-  renderPipelineTable();
+  applyFilters();
+  if(currentView==='board') renderBoard();
+  else renderTable();
 }
 
-let sortState={field:'stageNum',dir:1};
-function sortTable(field){
-  if(sortState.field===field) sortState.dir*=-1;
-  else{sortState.field=field;sortState.dir=1;}
-  document.querySelectorAll('th').forEach(th=>{th.classList.remove('sorted-asc','sorted-desc');});
-  const headers=['id','name','sector','service','stage','revenue','priority','owner','competitive_risk','close_date'];
-  const idx=headers.indexOf(field);
-  if(idx>=0){
-    const ths=document.querySelectorAll('#tab-pipeline table th');
-    if(ths[idx]){ths[idx].classList.add(sortState.dir===1?'sorted-asc':'sorted-desc');}
-  }
-  filteredDeals.sort((a,b)=>{
-    let av=a[field]??'',bv=b[field]??'';
-    if(typeof av==='number') return (av-bv)*sortState.dir;
-    return String(av).localeCompare(String(bv))*sortState.dir;
+function renderBoard(){
+  const el=document.getElementById('boardView');
+  if(!el) return;
+  const stages=['Active/Verbal','In Discussion','Discovery','New Lead','On Hold'];
+  let html='';
+  stages.forEach(s=>{
+    const cards=filteredDeals.filter(d=>d.stage===s);
+    const total=cards.reduce((acc,d)=>acc+(d.revenue||0),0);
+    const bg=STAGE_COLORS_MAP[s]||'#8b93a6';
+    html+=`<div class="board-col">
+      <div class="board-col-hdr">
+        <div>
+          <div class="board-col-name">${s}</div>
+          <div class="board-col-val">${fmtThb(total)}</div>
+        </div>
+        <span class="board-col-badge" style="background:${bg}22;color:${bg}">${cards.length}</span>
+      </div>
+      <div class="board-cards">
+        ${cards.map(d=>`
+        <div class="board-card" onclick="openEditModal(${d.id})">
+          <div class="bc-client">${d.name}</div>
+          <div class="bc-service">${d.service||'–'} · ${d.sector||'–'}</div>
+          <div class="bc-value">${fmtThb(d.revenue)}</div>
+          <div class="bc-footer">
+            <div class="bc-owner" title="${d.owner||''}">${initials(d.owner||'')}</div>
+            <div class="bc-date">${d.close_date||'–'}</div>
+            <span class="bc-risk ${(d.competitive_risk||'').toLowerCase()}">${d.competitive_risk||'–'}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
   });
-  renderPipelineTable();
+  el.innerHTML=html;
+  el.style.display='flex';
 }
 
-function renderPipelineTable(){
-  document.getElementById('resultsCount').textContent=`Showing ${filteredDeals.length} of ${allDeals.length} deals`;
-  const sorted=[...filteredDeals];
-  const body=document.getElementById('pipelineBody');
-  body.innerHTML=sorted.map(d=>{
-    const n=d.stageNum||5;
-    return `<tr class="stage${n}-row" data-id="${d.id}">
-      <td style="color:var(--gray);font-size:11px;">${d.id}</td>
-      <td><strong>${d.name}</strong><br/><span style="font-size:10px;color:var(--gray)">${d.short||''}</span></td>
-      <td style="font-size:11px;">${d.sector||'–'}</td>
-      <td>${serviceBadge(d.service)}</td>
-      <td>${stageBadge(d.stage)}</td>
-      <td style="font-weight:700;color:var(--pmc-navy-700)">${fmtThb(d.revenue)}</td>
-      <td>${priorityBadge(d.priority)}</td>
-      <td style="font-size:11px;">${d.owner||'–'}</td>
-      <td style="font-size:11px;">${riskBadge(d.competitive_risk)}</td>
-      <td style="font-size:11px;">${d.close_date||'–'}</td>
-      <td style="white-space:nowrap;">
-        <button class="btn btn-secondary btn-sm" onclick="openEditModal(${d.id})">✏️</button>
-        <button class="btn btn-secondary btn-sm" onclick="openActivityModal(${d.id},'${escHtml(d.name)}')">🕐</button>
-        <button class="btn btn-secondary btn-sm" onclick="deleteDeal(${d.id})" style="color:var(--red)">🗑️</button>
-      </td>
+function sortTable(field){
+  if(sortField===field) sortDir*=-1; else {sortField=field;sortDir=1;}
+  renderTable();
+}
+
+function renderTable(){
+  const el=document.getElementById('tableView');
+  if(!el) return;
+  const sorted=[...filteredDeals].sort((a,b)=>{
+    let av=a[sortField]??'',bv=b[sortField]??'';
+    if(sortField==='stageNum'){av=STAGE_NUM[a.stage]||9;bv=STAGE_NUM[b.stage]||9;}
+    if(typeof av==='number') return (av-bv)*sortDir;
+    return String(av).localeCompare(String(bv))*sortDir;
+  });
+
+  const rows=sorted.map(d=>{
+    const sc=STAGE_COLORS_MAP[d.stage]||'#8b93a6';
+    return `<tr>
+      <td>${d.id}</td>
+      <td style="font-weight:600;border-left:3px solid ${sc};padding-left:10px;">${d.name}</td>
+      <td>${d.sector||'–'}</td>
+      <td>${d.service||'–'}</td>
+      <td><span class="stage-pill" style="background:${sc}22;color:${sc}">${d.stage}</span></td>
+      <td style="font-weight:600;">${fmtThb(d.revenue)}</td>
+      <td><span class="priority-badge ${d.priority||''}">${d.priority||'–'}</span></td>
+      <td>${d.owner||'–'}</td>
+      <td><span class="risk-badge ${d.competitive_risk||''}">${d.competitive_risk||'–'}</span></td>
+      <td>${d.close_date||'–'}</td>
+      <td><div class="action-btns">
+        <button class="action-btn edit" onclick="openEditModal(${d.id})">Edit</button>
+        <button class="action-btn log" onclick="openActivityModal(${d.id})">Log</button>
+        <button class="action-btn del" onclick="deleteDeal(${d.id})">Del</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML=`<table>
+    <thead><tr>
+      <th onclick="sortTable('id')">#</th>
+      <th onclick="sortTable('name')">Client</th>
+      <th onclick="sortTable('sector')">Sector</th>
+      <th onclick="sortTable('service')">Service</th>
+      <th onclick="sortTable('stage')">Stage</th>
+      <th onclick="sortTable('revenue')">Revenue</th>
+      <th onclick="sortTable('priority')">Priority</th>
+      <th onclick="sortTable('owner')">Owner</th>
+      <th onclick="sortTable('competitive_risk')">Risk</th>
+      <th onclick="sortTable('close_date')">Close Date</th>
+      <th>Actions</th>
+    </tr></thead>
+    <tbody>${rows||'<tr><td colspan="11" class="empty-state">No deals match filters</td></tr>'}</tbody>
+  </table>`;
+  el.style.display='block';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════════════════════════
+function renderAnalysis(){
+  const deals=getDeals();
+  renderServiceMix(deals);
+  renderTargetChart(deals);
+  renderServiceBreakdown(deals);
+  if(document.getElementById('pivotChart')) showPivot(currentPivot, document.querySelector('.pivot-btn.active'));
+}
+
+function renderServiceMix(deals){
+  destroyChart('serviceMix');
+  const canvas=document.getElementById('serviceMixChart');
+  if(!canvas) return;
+  const svc={};
+  deals.forEach(d=>{ if(d.service){svc[d.service]=(svc[d.service]||0)+(d.revenue||0);} });
+  const labels=Object.keys(svc);
+  window.charts.serviceMix=new Chart(canvas,{
+    type:'doughnut',
+    data:{labels,datasets:[{data:Object.values(svc),backgroundColor:labels.map(l=>SERVICE_COLORS[l]||'#8b93a6'),borderWidth:2,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}},cutout:'68%',responsive:true,maintainAspectRatio:true}
+  });
+}
+
+function renderTargetChart(deals){
+  destroyChart('target');
+  const canvas=document.getElementById('targetChart');
+  if(!canvas) return;
+  const services=Object.keys(FIVE_YEAR_TARGETS);
+  const pipeline=services.map(s=>deals.filter(d=>d.service===s).reduce((a,d)=>a+(d.revenue||0),0)/1e6);
+  const targets=services.map(s=>(FIVE_YEAR_TARGETS[s][2026]||0));
+  window.charts.target=new Chart(canvas,{
+    type:'bar',
+    data:{labels:services,datasets:[
+      {label:'Pipeline (M)',data:pipeline,backgroundColor:'#243a6e',borderRadius:6},
+      {label:'2026 Target (M)',data:targets,backgroundColor:'rgba(232,0,13,.2)',borderColor:'var(--pmc-red-500)',borderWidth:2,type:'line',pointBackgroundColor:'var(--pmc-red-500)'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#e7ebf3'},ticks:{font:{size:11}}}}}
+  });
+}
+
+function renderServiceBreakdown(deals){
+  const tbody=document.getElementById('serviceBreakdownBody');
+  if(!tbody) return;
+  const services=['Survey','Express','Matching','Value-Added'];
+  tbody.innerHTML=services.map(s=>{
+    const sd=deals.filter(d=>d.service===s);
+    const pipe=sd.reduce((a,d)=>a+(d.revenue||0),0);
+    const wtd=sd.reduce((a,d)=>a+weighted(d),0);
+    const tgt=(FIVE_YEAR_TARGETS[s]?.[2026]||0)*1e6;
+    const gap=tgt-pipe;
+    return `<tr>
+      <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${SERVICE_COLORS[s]||'#8b93a6'};margin-right:6px;"></span>${s}</td>
+      <td>${sd.length}</td>
+      <td>${fmtThb(pipe)}</td>
+      <td>${fmtThb(wtd)}</td>
+      <td>${FIVE_YEAR_TARGETS[s]?.[2026]||'–'}M</td>
+      <td style="color:${gap>0?'var(--pmc-red-600)':'var(--status-success)'}">${gap>0?'-'+fmtThb(gap):'✓ On track'}</td>
     </tr>`;
   }).join('');
 }
 
-function escHtml(s){return String(s||'').replace(/'/g,"\\'");}
+// PIVOT CHARTS (existing logic, updated styling)
+const PIVOT_DEFS={
+  1:{title:'Revenue vs Sales Effort',insight:'Bubble size = revenue. Top-right = high value, low effort. Target for expansion.'},
+  2:{title:'Volume vs Revenue per Job',insight:'High volume + high rev/job = top accounts.'},
+  3:{title:'Strategic Matrix',insight:'X=pipeline value, Y=win probability. Top-right = invest now.'},
+  4:{title:'Sector Analysis',insight:'Total pipeline grouped by sector.'},
+  5:{title:'Owner Portfolio',insight:'Pipeline value per sales owner.'},
+  6:{title:'Service Mix',insight:'Revenue contribution by service line.'},
+  7:{title:'Win Probability Distribution',insight:'How win probability spreads across deals.'},
+  8:{title:'Revenue Concentration',insight:'How revenue is distributed across clients.'},
+  9:{title:'Risk vs Revenue',insight:'High-revenue deals with high risk need mitigation.'},
+  10:{title:'Pipeline Velocity',insight:'Which stages have fastest movement.'}
+};
 
-// ─── Deal Modal ───────────────────────────────────────────────────────────────
+function showPivot(n,btn){
+  currentPivot=n;
+  if(btn){ document.querySelectorAll('.pivot-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  const def=PIVOT_DEFS[n]||{title:'Chart '+n,insight:''};
+  document.getElementById('pivotTitle').textContent=def.title;
+  document.getElementById('pivotInsight').textContent=def.insight;
+  destroyChart('pivot');
+  const deals=getDeals();
+  const canvas=document.getElementById('pivotChart');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  let cfg=null;
+
+  if(n===1){
+    const pts=deals.map(d=>({x:d.jobs_year||Math.random()*10,y:(d.revenue||0)/1e6,r:Math.sqrt((d.revenue||0)/1e6)*2.5,label:d.name}));
+    cfg={type:'bubble',data:{datasets:[{label:'Deals',data:pts,backgroundColor:deals.map(d=>STAGE_COLORS_MAP[d.stage]||'#8b93a6')+'aa'}]},options:{plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.raw.label}: ฿${ctx.raw.y.toFixed(1)}M`}}},scales:{x:{title:{display:true,text:'Jobs/Year'}},y:{title:{display:true,text:'Revenue (M THB)'}}}}};
+  } else if(n===4){
+    const sec={};deals.forEach(d=>{sec[d.sector||'Other']=(sec[d.sector||'Other']||0)+(d.revenue||0)/1e6;});
+    cfg={type:'bar',data:{labels:Object.keys(sec),datasets:[{label:'Pipeline (M THB)',data:Object.values(sec),backgroundColor:'#243a6e',borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'฿'+v+'M'}}}}};
+  } else if(n===5){
+    const ow={};deals.forEach(d=>{ow[d.owner||'Unknown']=(ow[d.owner||'Unknown']||0)+(d.revenue||0)/1e6;});
+    const srt=Object.entries(ow).sort((a,b)=>b[1]-a[1]);
+    cfg={type:'bar',data:{labels:srt.map(e=>e[0]),datasets:[{label:'Pipeline (M THB)',data:srt.map(e=>e[1]),backgroundColor:'#34508c',borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>'฿'+v+'M'}}}}};
+  } else if(n===6){
+    const sv={};deals.forEach(d=>{sv[d.service||'Other']=(sv[d.service||'Other']||0)+(d.revenue||0)/1e6;});
+    cfg={type:'doughnut',data:{labels:Object.keys(sv),datasets:[{data:Object.values(sv),backgroundColor:Object.keys(sv).map(k=>SERVICE_COLORS[k]||'#8b93a6'),borderWidth:2,borderColor:'#fff'}]},options:{cutout:'65%',plugins:{legend:{position:'right'}}}};
+  } else if(n===7){
+    const bins=[0,10,20,30,40,50,60,70,80,90,100];
+    const bc=bins.map(()=>0);
+    deals.forEach(d=>{const p=Math.round((STAGE_PROB[d.stage]||0)*100);const i=Math.min(Math.floor(p/10),9);bc[i]++;});
+    cfg={type:'bar',data:{labels:bins.slice(0,10).map(b=>b+'%'),datasets:[{label:'Deals',data:bc.slice(0,10),backgroundColor:'#34508c',borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Win Probability'}}}}};
+  } else if(n===9){
+    const rmap={'Low':1,'Medium':2,'High':3};
+    const pts=deals.map(d=>({x:rmap[d.competitive_risk]||1,y:(d.revenue||0)/1e6,r:5,label:d.name,risk:d.competitive_risk}));
+    cfg={type:'bubble',data:{datasets:[{label:'Deals',data:pts,backgroundColor:deals.map(d=>d.competitive_risk==='High'?'rgba(232,0,13,.5)':d.competitive_risk==='Medium'?'rgba(201,138,0,.5)':'rgba(31,138,91,.5)')}]},options:{plugins:{tooltip:{callbacks:{label:c=>`${c.raw.label}: ฿${c.raw.y.toFixed(1)}M`}}},scales:{x:{min:0.5,max:3.5,ticks:{callback:v=>['','Low','Med','High'][v]||''}},y:{title:{display:true,text:'Revenue (M THB)'}}}}};
+  } else {
+    // Default: stage bar chart
+    const stages=['New Lead','Discovery','In Discussion','Active/Verbal','On Hold'];
+    const sv=stages.map(s=>deals.filter(d=>d.stage===s).reduce((a,d)=>a+(d.revenue||0),0)/1e6);
+    cfg={type:'bar',data:{labels:stages,datasets:[{label:'Pipeline (M THB)',data:sv,backgroundColor:stages.map(s=>STAGE_COLORS_MAP[s]||'#8b93a6'),borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'฿'+v+'M'}}}}};
+  }
+
+  if(cfg){ window.charts.pivot=new Chart(ctx,{...cfg,options:{...cfg.options,responsive:true,maintainAspectRatio:false}}); }
+
+  // Pivot table
+  const ptDiv=document.getElementById('pivotTable');
+  if(ptDiv&&n===4){
+    const sec={};deals.forEach(d=>{if(!sec[d.sector||'Other'])sec[d.sector||'Other']={count:0,rev:0};sec[d.sector||'Other'].count++;sec[d.sector||'Other'].rev+=(d.revenue||0);});
+    ptDiv.innerHTML=`<table class="report-table"><thead><tr><th>Sector</th><th>Deals</th><th>Pipeline</th><th>Avg Size</th></tr></thead><tbody>${Object.entries(sec).sort((a,b)=>b[1].rev-a[1].rev).map(([s,v])=>`<tr><td>${s}</td><td>${v.count}</td><td>${fmtThb(v.rev)}</td><td>${fmtThb(v.rev/v.count)}</td></tr>`).join('')}</tbody></table>`;
+  } else if(ptDiv) ptDiv.innerHTML='';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════════════════════════
+function renderReports(){
+  const deals=getDeals();
+  const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('reportDate').textContent=`Generated ${today} · ${deals.length} deals`;
+
+  const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
+  const wtd=deals.reduce((s,d)=>s+weighted(d),0);
+  const active=deals.filter(d=>d.stage==='Active/Verbal').length;
+  const p1=deals.filter(d=>d.priority==='P1').length;
+  document.getElementById('reportKpiGrid').innerHTML=`
+    <div class="report-kpi"><div class="report-kpi-val">${fmtThb(total)}</div><div class="report-kpi-label">Total Pipeline</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${fmtThb(wtd)}</div><div class="report-kpi-label">Weighted Forecast</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${active}</div><div class="report-kpi-label">Active/Verbal Deals</div></div>
+    <div class="report-kpi"><div class="report-kpi-val">${p1}</div><div class="report-kpi-label">P1 Priority</div></div>
+  `;
+
+  // Sector table
+  const sec={};deals.forEach(d=>{if(!sec[d.sector||'Other'])sec[d.sector||'Other']={n:0,rev:0,wtd:0,won:0};sec[d.sector||'Other'].n++;sec[d.sector||'Other'].rev+=(d.revenue||0);sec[d.sector||'Other'].wtd+=weighted(d);if(d.stage==='Active/Verbal')sec[d.sector||'Other'].won++;});
+  document.getElementById('rptSectorBody').innerHTML=Object.entries(sec).sort((a,b)=>b[1].rev-a[1].rev).map(([s,v])=>`<tr><td>${s}</td><td>${v.n}</td><td>${fmtThb(v.rev)}</td><td>${fmtThb(v.wtd)}</td><td>${v.n?Math.round(v.won/v.n*100):0}%</td></tr>`).join('');
+
+  // Service table
+  const sv={}; deals.forEach(d=>{if(!sv[d.service||'Other'])sv[d.service||'Other']={n:0,rev:0};sv[d.service||'Other'].n++;sv[d.service||'Other'].rev+=(d.revenue||0);});
+  document.getElementById('rptServiceBody').innerHTML=Object.entries(sv).sort((a,b)=>b[1].rev-a[1].rev).map(([s,v])=>{const tgt=(FIVE_YEAR_TARGETS[s]?.[2026]||0)*1e6;const cov=tgt?Math.round(v.rev/tgt*100):null;return`<tr><td>${s}</td><td>${v.n}</td><td>${fmtThb(v.rev)}</td><td>${FIVE_YEAR_TARGETS[s]?.[2026]||'–'}M</td><td>${cov!==null?cov+'%':'–'}</td></tr>`;}).join('');
+
+  // Top deals
+  document.getElementById('rptTopBody').innerHTML=[...deals].sort((a,b)=>(b.revenue||0)-(a.revenue||0)).slice(0,10).map((d,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${d.name}</td><td>${d.service||'–'}</td><td><span class="stage-pill" style="background:${STAGE_COLORS_MAP[d.stage]||'#8b93a6'}22;color:${STAGE_COLORS_MAP[d.stage]||'#8b93a6'}">${d.stage}</span></td><td>${fmtThb(d.revenue)}</td><td>${fmtThb(weighted(d))}</td><td>${d.close_date||'–'}</td><td>${d.owner||'–'}</td></tr>`).join('');
+
+  // Build summary text for copy
+  buildSummaryText(deals);
+}
+
+function buildSummaryText(deals){
+  const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
+  const stageLines=Object.entries(STAGE_NUM).map(([s])=>{const sd=deals.filter(d=>d.stage===s);return`  ${s}: ${sd.length} deals · ${fmtThb(sd.reduce((a,d)=>a+(d.revenue||0),0))}`;}).join('\n');
+  const p1s=deals.filter(d=>d.priority==='P1');
+  const highRisk=deals.filter(d=>d.competitive_risk==='High');
+  const urgent=deals.filter(d=>d.close_date&&daysDiff(d.close_date)<=30&&daysDiff(d.close_date)>=0);
+  const surveyPipe=deals.filter(d=>d.service==='Survey').reduce((s,d)=>s+(d.revenue||0),0);
+  const txt=`POSTMAN CLOUD — EXCOM PIPELINE SUMMARY
+Generated: ${new Date().toLocaleDateString()} | Total: ${fmtThb(total)} | ${deals.length} deals
+${'═'.repeat(60)}
+STAGE BREAKDOWN:
+${stageLines}
+P1 ACCOUNTS (${p1s.length}):
+${p1s.map(d=>`  • ${d.name} — ${fmtThb(d.revenue)} [${d.stage}]`).join('\n')||'  None'}
+IMMEDIATE ACTIONS:
+${highRisk.map(d=>`  ⚠ HIGH RISK: ${d.name}`).join('\n')||'  None'}
+${urgent.map(d=>`  ⏰ CLOSING SOON: ${d.name} — ${d.close_date}`).join('\n')||'  No deals closing within 30 days'}
+2026 SURVEY TARGET: THB 12M | Pipeline: ${fmtThb(surveyPipe)} | Gap: ${surveyPipe>=12e6?'ON TARGET ✓':'THB '+((12e6-surveyPipe)/1e6).toFixed(1)+'M'}
+TOP 5 ACCOUNTS:
+${[...deals].sort((a,b)=>(b.revenue||0)-(a.revenue||0)).slice(0,5).map((d,i)=>`  ${i+1}. ${d.name} — ${fmtThb(d.revenue)} [${d.stage}] ${d.owner||''}`).join('\n')}
+Generated by Postman Cloud Sales OS · Capital8 Consortium`;
+  document.getElementById('summaryText').textContent=txt;
+}
+
+function copySummary(){ navigator.clipboard.writeText(document.getElementById('summaryText').textContent).then(()=>toast('Copied!','success')).catch(()=>toast('Copy failed','error')); }
+
+// ═══════════════════════════════════════════════════════════════
+// DEAL CRUD
+// ═══════════════════════════════════════════════════════════════
 function openCreateModal(){
   editingDealId=null;
   document.getElementById('modalTitle').textContent='New Opportunity';
-  document.getElementById('modalSaveBtn').textContent='Create Opportunity';
-  clearForm();
-  document.getElementById('f_created_by').value=getUser();
+  document.getElementById('modalSaveBtn').textContent='Create';
+  ['name','contact_name','contact_email','contact_phone','notes','decision_maker','next_action','created_by'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)el.value='';});
+  ['revenue','jobs_year'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)el.value='';});
+  document.getElementById('f_stage').value='New Lead';
+  document.getElementById('f_priority').value='P3';
+  document.getElementById('f_competitive_risk').value='Low';
+  document.getElementById('f_budget_status').value='Unknown';
+  document.getElementById('f_close_date').value='';
+  if(currentUserName) document.getElementById('f_created_by').value=currentUserName;
   document.getElementById('dealModal').style.display='flex';
+  document.getElementById('f_name').focus();
 }
 
 function openEditModal(id){
@@ -1025,681 +1369,152 @@ function openEditModal(id){
   editingDealId=id;
   document.getElementById('modalTitle').textContent='Edit Opportunity';
   document.getElementById('modalSaveBtn').textContent='Save Changes';
-  document.getElementById('f_name').value=d.name||'';
-  document.getElementById('f_short').value=d.short||'';
-  document.getElementById('f_sector').value=d.sector||'';
-  document.getElementById('f_useCase').value=d.useCase||'';
-  document.getElementById('f_service').value=d.service||'Survey';
-  document.getElementById('f_stage').value=d.stage||'New Lead';
-  document.getElementById('f_revenue').value=d.revenue||'';
-  document.getElementById('f_fee').value=d.fee||'';
-  document.getElementById('f_volume').value=d.volume||'';
-  document.getElementById('f_owner').value=d.owner||'';
-  document.getElementById('f_priority').value=d.priority||'P2';
-  document.getElementById('f_effort').value=d.effort||3;
-  document.getElementById('effortLabel').textContent=d.effort||3;
-  document.getElementById('f_competitive_risk').value=d.competitive_risk||'Low';
-  document.getElementById('f_close_date').value=d.close_date||'';
-  document.getElementById('f_notes').value=d.notes||'';
-  document.getElementById('f_created_by').value=d.created_by||getUser();
+  const fields=['name','sector','service','stage','priority','revenue','close_date','owner','competitive_risk','contact_name','contact_email','contact_phone','jobs_year','budget_status','decision_maker','next_action','created_by','notes'];
+  fields.forEach(f=>{const el=document.getElementById('f_'+f);if(el) el.value=d[f]??'';});
   document.getElementById('dealModal').style.display='flex';
 }
 
-function clearForm(){
-  ['f_name','f_short','f_sector','f_useCase','f_revenue','f_fee','f_volume','f_owner','f_close_date','f_notes','f_created_by']
-    .forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f_service').value='Survey';
-  document.getElementById('f_stage').value='New Lead';
-  document.getElementById('f_priority').value='P2';
-  document.getElementById('f_effort').value=3;
-  document.getElementById('effortLabel').textContent=3;
-  document.getElementById('f_competitive_risk').value='Low';
-}
-
-function closeDealModal(){document.getElementById('dealModal').style.display='none';}
-function closeDealModalBackdrop(e){if(e.target.id==='dealModal')closeDealModal();}
+function closeDealModal(){ document.getElementById('dealModal').style.display='none'; editingDealId=null; }
 
 async function saveDeal(){
   const name=document.getElementById('f_name').value.trim();
-  if(!name){toast('Client name is required','error');return;}
-  const stage=document.getElementById('f_stage').value;
+  if(!name){ toast('Client name required','error'); return; }
   const payload={
     name,
-    short:document.getElementById('f_short').value,
     sector:document.getElementById('f_sector').value,
-    useCase:document.getElementById('f_useCase').value,
     service:document.getElementById('f_service').value,
-    stage,
-    stageNum:STAGE_NUM[stage]||5,
-    revenue:parseFloat(document.getElementById('f_revenue').value)||0,
-    fee:document.getElementById('f_fee').value,
-    volume:parseInt(document.getElementById('f_volume').value)||0,
-    owner:document.getElementById('f_owner').value,
+    stage:document.getElementById('f_stage').value,
     priority:document.getElementById('f_priority').value,
-    effort:parseInt(document.getElementById('f_effort').value)||3,
-    competitive_risk:document.getElementById('f_competitive_risk').value,
+    revenue:parseFloat(document.getElementById('f_revenue').value)||0,
     close_date:document.getElementById('f_close_date').value,
-    notes:document.getElementById('f_notes').value,
-    created_by:document.getElementById('f_created_by').value||getUser(),
+    owner:document.getElementById('f_owner').value,
+    competitive_risk:document.getElementById('f_competitive_risk').value,
+    contact_name:document.getElementById('f_contact_name').value,
+    contact_email:document.getElementById('f_contact_email').value,
+    contact_phone:document.getElementById('f_contact_phone').value,
+    jobs_year:parseInt(document.getElementById('f_jobs_year').value)||0,
+    budget_status:document.getElementById('f_budget_status').value,
+    decision_maker:document.getElementById('f_decision_maker').value,
+    next_action:document.getElementById('f_next_action').value,
+    created_by:document.getElementById('f_created_by').value,
+    notes:document.getElementById('f_notes').value
   };
+  const btn=document.getElementById('modalSaveBtn');
+  btn.disabled=true; btn.textContent='Saving…';
   try{
-    let res;
-    if(editingDealId){
-      res=await fetch(`/api/deals/${editingDealId}?user=${encodeURIComponent(getUser())}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    }else{
-      res=await fetch('/api/deals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    }
-    if(!res.ok) throw new Error(await res.text());
-    closeDealModal();
-    await loadDeals();
-    toast(editingDealId?'Deal updated!':'Deal created!','success');
-  }catch(e){toast('Save failed: '+e.message,'error');}
+    const url=editingDealId?`/api/deals/${editingDealId}`:'/api/deals';
+    const method=editingDealId?'PUT':'POST';
+    const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(res.ok){
+      closeDealModal();
+      await loadDeals();
+      toast(editingDealId?'Deal updated':'Deal created','success');
+    } else { toast('Save failed','error'); }
+  }catch(e){ toast('Error saving deal','error'); }
+  btn.disabled=false; btn.textContent=editingDealId?'Save Changes':'Create';
 }
 
 async function deleteDeal(id){
-  if(!confirm('Delete this deal? This cannot be undone.')) return;
-  await fetch('/api/deals/'+id,{method:'DELETE'});
-  await loadDeals();
-  toast('Deal deleted');
+  if(!confirm('Delete this deal?')) return;
+  const res=await fetch(`/api/deals/${id}`,{method:'DELETE'});
+  if(res.ok){ await loadDeals(); toast('Deleted','success'); }
+  else toast('Delete failed','error');
 }
 
-// ─── Activity Modal ───────────────────────────────────────────────────────────
-async function openActivityModal(id,name){
-  document.getElementById('activityTitle').textContent='Activity Log — '+name;
+// ═══════════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ═══════════════════════════════════════════════════════════════
+function openActivityModal(id){
+  const d=allDeals.find(x=>x.id===id);
+  if(!d) return;
+  document.getElementById('activityTitle').textContent=`Activity — ${d.name}`;
+  const log=d.activity_log||[];
+  document.getElementById('activityList').innerHTML=log.length
+    ?log.map(l=>`<div style="padding:10px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;"><strong>${l.date||''}</strong> — ${l.note||''}</div>`).join('')
+    :'<div class="empty-state">No activity logged yet</div>';
   document.getElementById('activityModal').style.display='flex';
-  const res=await fetch('/api/activities/'+id);
-  const acts=await res.json();
-  if(acts.length===0){
-    document.getElementById('activityList').innerHTML='<p style="font-size:12px;color:var(--gray);padding:12px 0;">No activity recorded yet.</p>';
-    return;
-  }
-  document.getElementById('activityList').innerHTML=acts.map(a=>`
-    <div class="activity-entry">
-      <div class="act-time">${a.timestamp||''}<br/><span style="color:var(--pmc-navy-600)">${a.user_name||''}</span></div>
-      <div class="act-body">
-        <strong>${a.action||''}</strong>
-        ${a.field_changed?`· <em>${a.field_changed}</em>`:''}
-        ${a.old_value&&a.new_value?`<br/>${a.old_value} → <strong>${a.new_value}</strong>`:''}
-      </div>
-    </div>`).join('');
 }
-function closeActivityModal(){document.getElementById('activityModal').style.display='none';}
+function closeActivityModal(){ document.getElementById('activityModal').style.display='none'; }
 
-// ─── Import Modal ─────────────────────────────────────────────────────────────
-function openImportModal(){document.getElementById('importModal').style.display='flex';}
-function closeImportModal(){
-  document.getElementById('importModal').style.display='none';
-  document.getElementById('previewSection').style.display='none';
-  document.getElementById('fileInput').value='';
-  importFile=null;
-}
+// ═══════════════════════════════════════════════════════════════
+// IMPORT
+// ═══════════════════════════════════════════════════════════════
+function openImportModal(){ document.getElementById('importModal').style.display='flex'; document.getElementById('previewSection').style.display='none'; }
+function closeImportModal(){ document.getElementById('importModal').style.display='none'; importFile=null; }
 
 function setupDragDrop(){
   const dz=document.getElementById('dropZone');
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
-  dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
-  dz.addEventListener('drop',e=>{
-    e.preventDefault();dz.classList.remove('dragover');
-    const f=e.dataTransfer.files[0];
-    if(f) processImportFile(f);
-  });
+  if(!dz) return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--pmc-navy-600)';});
+  dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f) processImportFile(f);});
 }
 
-function handleFileSelect(e){
-  const f=e.target.files[0];
-  if(f) processImportFile(f);
-}
+function handleFileSelect(e){ if(e.target.files[0]) processImportFile(e.target.files[0]); }
 
-async function processImportFile(f){
-  importFile=f;
-  document.getElementById('previewSection').style.display='block';
-  if(f.name.endsWith('.csv')){
-    const text=await f.text();
-    const lines=text.split('\n').filter(l=>!l.startsWith('#')&&l.trim());
-    const headers=lines[0].split(',');
-    const rows=lines.slice(1,6).map(l=>l.split(','));
-    let html='<table style="font-size:10px;border-collapse:collapse;"><thead><tr>'+headers.map(h=>`<th style="padding:4px 6px;border:1px solid #e2e8f0;background:#f8fafc;">${h}</th>`).join('')+'</tr></thead><tbody>';
-    html+=rows.map(r=>'<tr>'+r.map(c=>`<td style="padding:4px 6px;border:1px solid #e2e8f0;">${c}</td>`).join('')+'</tr>').join('');
-    html+='</tbody></table>';
-    document.getElementById('previewTable').innerHTML=html;
-    const total=lines.length-1;
-    document.getElementById('importBtn').textContent=`Import ${total} Rows`;
-  }else{
-    document.getElementById('previewTable').innerHTML='<p style="font-size:11px;color:var(--gray)">Excel file selected. Preview not available. Click Import to proceed.</p>';
-    document.getElementById('importBtn').textContent='Import Excel File';
-  }
+function processImportFile(file){
+  importFile=file;
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['csv','xlsx'].includes(ext)){ toast('CSV or XLSX only','error'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      let rows=[];
+      if(ext==='csv'){
+        const lines=e.target.result.split('\n').filter(l=>l.trim());
+        const headers=lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
+        rows=lines.slice(1,6).map(l=>{
+          const vals=l.split(',').map(v=>v.trim().replace(/"/g,''));
+          const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');
+          return obj;
+        });
+      }
+      const pt=document.getElementById('previewTable');
+      if(rows.length){
+        const hdrs=Object.keys(rows[0]);
+        pt.innerHTML=`<table class="report-table"><thead><tr>${hdrs.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${hdrs.map(h=>`<td>${r[h]||''}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      } else { pt.innerHTML='<div class="empty-state">Could not preview file</div>'; }
+      document.getElementById('previewSection').style.display='block';
+    }catch(err){ toast('Preview failed','error'); }
+  };
+  if(ext==='csv') reader.readAsText(file);
+  else reader.readAsArrayBuffer(file);
 }
 
 async function doImport(){
-  if(!importFile){toast('No file selected','error');return;}
-  const fd=new FormData();
-  fd.append('file',importFile);
+  if(!importFile){ toast('No file selected','error'); return; }
+  const formData=new FormData();
+  formData.append('file',importFile);
+  const btn=document.getElementById('importBtn');
+  btn.disabled=true; btn.textContent='Importing…';
   try{
-    const res=await fetch('/api/import/csv',{method:'POST',body:fd});
-    const result=await res.json();
-    closeImportModal();
-    await loadDeals();
-    toast(`Imported ${result.imported} deals${result.errors?.length?' ('+result.errors.length+' errors)':''}`,result.errors?.length?'error':'success');
-  }catch(e){toast('Import failed: '+e.message,'error');}
+    const res=await fetch('/api/import',{method:'POST',body:formData});
+    if(res.ok){
+      const d=await res.json();
+      closeImportModal();
+      await loadDeals();
+      toast(`Imported ${d.imported||0} deals`,'success');
+    } else { toast('Import failed','error'); }
+  }catch(e){ toast('Import error','error'); }
+  btn.disabled=false; btn.textContent='Import Rows';
 }
 
-// ─── Client Cards ─────────────────────────────────────────────────────────────
-function renderClientCards(){
-  const q=(document.getElementById('cardSearch')?.value||'').toLowerCase();
-  const st=document.getElementById('cardStageFilter')?.value||'';
-  const sv=document.getElementById('cardServiceFilter')?.value||'';
-  let deals=allDeals.filter(d=>{
-    if(q&&!`${d.name} ${d.short} ${d.sector} ${d.notes}`.toLowerCase().includes(q)) return false;
-    if(st&&d.stage!==st) return false;
-    if(sv&&d.service!==sv) return false;
-    return true;
-  });
-  document.getElementById('clientCardsGrid').innerHTML=deals.map(d=>`
-    <div class="client-card" id="card-${d.id}" onclick="toggleCard(${d.id})">
-      <div class="card-top">
-        <div><div class="card-name">${d.short||d.name}</div><div class="card-short">${d.sector||'–'}</div></div>
-        ${priorityBadge(d.priority)}
-      </div>
-      <div class="card-revenue">${fmtThb(d.revenue)}</div>
-      <div class="card-meta">
-        ${stageBadge(d.stage)}${serviceBadge(d.service)}
-      </div>
-      <div style="font-size:10px;color:var(--gray);margin-top:4px;">👤 ${d.owner||'–'}</div>
-      <div class="card-expanded" id="expanded-${d.id}">
-        <p><span class="exp-label">Use Case:</span> ${d.useCase||'–'}</p>
-        <p><span class="exp-label">Fee:</span> ${d.fee||'–'} · Volume: ${(d.volume||0).toLocaleString()}</p>
-        <p><span class="exp-label">Risk:</span> ${d.competitive_risk||'–'} · Effort: ${d.effort||'–'}/5</p>
-        <p><span class="exp-label">Close:</span> ${d.close_date||'–'}</p>
-        <p><span class="exp-label">Notes:</span> ${d.notes||'–'}</p>
-        <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="event.stopPropagation();openEditModal(${d.id})">✏️ Edit</button>
-      </div>
-    </div>`).join('');
-}
-
-function toggleCard(id){
-  const card=document.getElementById('card-'+id);
-  const exp=document.getElementById('expanded-'+id);
-  const isExpanded=card.classList.contains('expanded');
-  document.querySelectorAll('.client-card').forEach(c=>{c.classList.remove('expanded');});
-  document.querySelectorAll('.card-expanded').forEach(e=>{e.style.display='none';});
-  if(!isExpanded){card.classList.add('expanded');exp.style.display='block';}
-}
-
-// ─── Pivot Charts ─────────────────────────────────────────────────────────────
-function showPivot(n, btn){
-  currentPivot=n;
-  document.querySelectorAll('.pivot-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  destroyChart('pivotChart');
-  const titles=[,'Revenue vs Sales Effort','Volume vs Revenue per Job','Strategic Priority Matrix',
-    'Sector Pipeline Analysis','Owner Portfolio','Service Mix by Stage','Win Probability Analysis',
-    'Revenue Concentration','Competitive Risk vs Revenue','Pipeline Velocity'];
-  const insights=[,'Sweet Spot: high revenue, low effort. Target these first.',
-    'Larger bubble = bigger total revenue. Focus on high-volume, high-value segments.',
-    'Red = P1 priority. Strategic accounts above the median revenue line deserve immediate attention.',
-    'Stacked by stage — assess which sectors have deals deepest in pipeline.',
-    'Balance portfolio across owners. No single owner should carry all P1s.',
-    'Survey dominates. Ensure Express and Matching are being seeded early.',
-    'Win Score = (6-effort) × priority weight × stage weight. High score = close now.',
-    'Top 5 accounts drive majority of pipeline value. Diversification needed.',
-    'Top-right quadrant: high risk, high value — requires immediate competitive response.',
-    'Green bars close within 90 days. Amber = 90-180 days. Red = 180+ days.'];
-  document.getElementById('pivotTitle').textContent=titles[n]||'';
-  document.getElementById('pivotInsight').textContent=insights[n]||'';
-
-  switch(n){
-    case 1: renderPivot1(); break;
-    case 2: renderPivot2(); break;
-    case 3: renderPivot3(); break;
-    case 4: renderPivot4(); break;
-    case 5: renderPivot5(); break;
-    case 6: renderPivot6(); break;
-    case 7: renderPivot7(); break;
-    case 8: renderPivot8(); break;
-    case 9: renderPivot9(); break;
-    case 10: renderPivot10(); break;
-  }
-}
-
-function destroyChart(id){
-  if(window.charts[id]){window.charts[id].destroy();delete window.charts[id];}
-}
-
-function renderPivot1(){
-  const data=allDeals.map(d=>({
-    x:d.revenue||0, y:6-(d.effort||3),
-    r:Math.max(8,Math.min(30,Math.sqrt((d.revenue||0)/1000))),
-    label:d.short||d.name, stage:d.stage, stageNum:d.stageNum||5,
-    revenue:d.revenue, effort:d.effort, name:d.name
-  }));
-  const stageGroups={};
-  data.forEach(p=>{
-    const s=p.stage||'New Lead';
-    if(!stageGroups[s]) stageGroups[s]=[];
-    stageGroups[s].push(p);
-  });
-  const datasets=Object.entries(stageGroups).map(([stage,pts])=>({
-    label:stage, data:pts.map(p=>({x:p.x,y:p.y,r:p.r,label:p.label,name:p.name,revenue:p.revenue,effort:p.effort})),
-    backgroundColor:hexToRgba(STAGE_COLORS[STAGE_NUM[stage]||5],0.7),
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bubble',
-    data:{datasets},
-    options:{responsive:true,plugins:{
-      legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return`${d.name} · ${fmtThb(d.revenue)} · Effort:${d.effort}`;}}}
-    },
-    scales:{
-      x:{title:{display:true,text:'Revenue Potential (THB)'},ticks:{callback:v=>fmtThb(v)}},
-      y:{title:{display:true,text:'Ease (inverted effort)'},min:0,max:6,ticks:{stepSize:1,callback:v=>['','5-Easy','4','3-Med','2','1-Hard',''][v]||v}}
-    }}
-  });
-  // Table
-  const sorted=[...allDeals].sort((a,b)=>{
-    const scoreA=(a.revenue||0)/(a.effort||3);
-    const scoreB=(b.revenue||0)/(b.effort||3);
-    return scoreB-scoreA;
-  });
-  renderPivotTable(['Client','Revenue','Effort','Score','Stage'],
-    sorted.map(d=>[d.name,fmtThb(d.revenue),d.effort||'–',fmtThb((d.revenue||0)/(d.effort||3)),stageBadge(d.stage)]));
-}
-
-function renderPivot2(){
-  const withVol=allDeals.filter(d=>(d.volume||0)>0);
-  const datasets=[{
-    label:'Deals (by service)',
-    data:withVol.map(d=>{
-      const revPerJob=(d.revenue&&d.volume)?d.revenue/d.volume:0;
-      return {x:d.volume,y:revPerJob,r:Math.max(8,Math.min(30,Math.sqrt((d.revenue||0)/1000))),name:d.name,service:d.service,volume:d.volume,revenue:d.revenue,revPerJob};
-    }),
-    backgroundColor:withVol.map(d=>hexToRgba(SERVICE_COLORS[d.service]||'#94A3B8',0.7)),
-    pointStyle:'circle'
-  }];
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bubble',data:{datasets},
-    options:{responsive:true,plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return`${d.name} · Vol:${(d.volume||0).toLocaleString()} · Rev/Job:฿${Math.round(d.revPerJob)}`;}}}},
-      scales:{x:{title:{display:true,text:'Transaction Volume'},ticks:{callback:v=>v.toLocaleString()}},
-        y:{title:{display:true,text:'Revenue per Transaction (THB)'},ticks:{callback:v=>'฿'+v}}}}
-  });
-  renderPivotTable(['Client','Service','Volume','Rev/Txn','Total Rev'],
-    withVol.sort((a,b)=>(b.revenue||0)-(a.revenue||0)).map(d=>[
-      d.name,serviceBadge(d.service),(d.volume||0).toLocaleString(),
-      '฿'+Math.round((d.revenue||0)/(d.volume||1)),fmtThb(d.revenue)]));
-}
-
-function renderPivot3(){
-  const priorityWeight={'P1':3,'P2':2,'P3':1};
-  const pColors={'P1':'#E53E3E','P2':'#F59E0B','P3':'#94A3B8'};
-  const pGroups={'P1':[],'P2':[],'P3':[]};
-  allDeals.forEach(d=>{const p=d.priority||'P3';(pGroups[p]=pGroups[p]||[]).push(d);});
-  const datasets=Object.entries(pGroups).map(([p,deals])=>({
-    label:`${p} (${deals.length})`,
-    data:deals.map(d=>({x:d.effort||3,y:d.revenue||0,name:d.name,priority:d.priority,sector:d.sector})),
-    backgroundColor:hexToRgba(pColors[p],0.75),pointRadius:10,pointHoverRadius:13
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'scatter',data:{datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return`${d.name} · ${d.priority} · ${fmtThb(d.y)} · ${d.sector}`;}}}},
-      scales:{x:{title:{display:true,text:'Sales Effort (1=Easy, 5=Hard)'},min:0.5,max:5.5,ticks:{stepSize:1}},
-        y:{title:{display:true,text:'Revenue (THB)'},ticks:{callback:v=>fmtThb(v)}}}}
-  });
-  const sorted=[...allDeals].sort((a,b)=>(priorityWeight[a.priority]||1)-(priorityWeight[b.priority]||1)||((b.revenue||0)-(a.revenue||0)));
-  renderPivotTable(['Client','Priority','Revenue','Effort','Sector'],
-    sorted.map(d=>[d.name,priorityBadge(d.priority),fmtThb(d.revenue),d.effort||'–',d.sector||'–']));
-}
-
-function renderPivot4(){
-  const secMap={};
-  const stageOrder=['Active/Verbal','In Discussion','On Hold','Discovery','New Lead'];
-  allDeals.forEach(d=>{
-    const s=d.sector||'Other';
-    if(!secMap[s]){secMap[s]={total:0,stages:{}};}
-    secMap[s].total+=(d.revenue||0);
-    secMap[s].stages[d.stage]=(secMap[s].stages[d.stage]||0)+(d.revenue||0);
-  });
-  const sorted=Object.entries(secMap).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
-  const labels=sorted.map(s=>s[0]);
-  const datasets=stageOrder.map((stage,i)=>({
-    label:stage,
-    data:sorted.map(s=>s[1].stages[stage]||0),
-    backgroundColor:Object.values(STAGE_COLORS)[i],
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bar',data:{labels,datasets},
-    options:{indexAxis:'y',responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},
-      scales:{x:{stacked:true,ticks:{callback:v=>fmtThb(v)}},y:{stacked:true}}}
-  });
-  renderPivotTable(['Sector','Deals','Total Revenue','Top Deal'],
-    sorted.map(([sec,info])=>{
-      const top=allDeals.filter(d=>d.sector===sec).sort((a,b)=>(b.revenue||0)-(a.revenue||0))[0];
-      const cnt=allDeals.filter(d=>d.sector===sec).length;
-      return [sec,cnt,fmtThb(info.total),top?.name||'–'];
-    }));
-}
-
-function renderPivot5(){
-  const ownerMap={};
-  allDeals.forEach(d=>{
-    const o=d.owner||'Unknown';
-    if(!ownerMap[o]){ownerMap[o]={deals:0,revenue:0,p1:0,stages:{}};}
-    ownerMap[o].deals++;
-    ownerMap[o].revenue+=(d.revenue||0);
-    if(d.priority==='P1') ownerMap[o].p1++;
-    ownerMap[o].stages[d.stage]=(ownerMap[o].stages[d.stage]||0)+1;
-  });
-  const owners=Object.keys(ownerMap).sort((a,b)=>ownerMap[b].revenue-ownerMap[a].revenue);
-  const stageOrder=['Active/Verbal','In Discussion','On Hold','Discovery','New Lead'];
-  const datasets=stageOrder.map((stage,i)=>({
-    label:stage, type:'bar',
-    data:owners.map(o=>ownerMap[o].stages[stage]||0),
-    backgroundColor:Object.values(STAGE_COLORS)[i],yAxisID:'y'
-  }));
-  datasets.push({
-    label:'Revenue (M)',type:'line',
-    data:owners.map(o=>ownerMap[o].revenue/1000000),
-    borderColor:'#1A2B4A',borderWidth:2,pointRadius:5,fill:false,yAxisID:'y2'
-  });
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bar',data:{labels:owners,datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},
-      scales:{y:{stacked:true,title:{display:true,text:'Deal Count'}},
-        y2:{position:'right',title:{display:true,text:'Revenue (M THB)'},grid:{display:false},ticks:{callback:v=>v+'M'}}}}
-  });
-  renderPivotTable(['Owner','Deals','P1 Count','Total Revenue','Avg Revenue'],
-    owners.map(o=>[o,ownerMap[o].deals,ownerMap[o].p1,fmtThb(ownerMap[o].revenue),fmtThb(ownerMap[o].revenue/ownerMap[o].deals)]));
-}
-
-function renderPivot6(){
-  const stageOrder=['Active/Verbal','In Discussion','On Hold','Discovery','New Lead'];
-  const services=['Survey','Express','Matching','Value-Added','Commerce'];
-  const datasets=services.map(svc=>({
-    label:svc,
-    data:stageOrder.map(st=>allDeals.filter(d=>d.stage===st&&d.service===svc).length),
-    backgroundColor:SERVICE_COLORS[svc]||'#94A3B8',
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bar',data:{labels:stageOrder,datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},
-      scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:'Deal Count'}}}}
-  });
-  const rows=stageOrder.map(st=>{
-    const total=allDeals.filter(d=>d.stage===st).length;
-    const rev=allDeals.filter(d=>d.stage===st).reduce((s,d)=>s+(d.revenue||0),0);
-    return [st,total,fmtThb(rev),...services.map(svc=>allDeals.filter(d=>d.stage===st&&d.service===svc).length)];
-  });
-  renderPivotTable(['Stage','Total','Revenue',...services],rows);
-}
-
-function renderPivot7(){
-  const pw={'P1':3,'P2':2,'P3':1};
-  const sw={1:3,2:2,3:1,4:1,5:1};
-  const data=allDeals.map(d=>{
-    const score=(6-(d.effort||3))*(pw[d.priority]||1)*(sw[d.stageNum||5]||1);
-    return {x:score,y:d.revenue||0,r:Math.max(8,Math.min(28,Math.sqrt((d.revenue||0)/1500))),
-      name:d.name,stage:d.stage,stageNum:d.stageNum||5,score};
-  });
-  const stageGroups={};
-  data.forEach(p=>{(stageGroups[p.stage]=stageGroups[p.stage]||[]).push(p);});
-  const datasets=Object.entries(stageGroups).map(([stage,pts])=>({
-    label:stage,
-    data:pts.map(p=>({x:p.x,y:p.y,r:p.r,name:p.name,score:p.score})),
-    backgroundColor:hexToRgba(STAGE_COLORS[STAGE_NUM[stage]||5],0.7)
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bubble',data:{datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return`${d.name} · Score:${d.score} · ${fmtThb(d.y)}`;}}}},
-      scales:{x:{title:{display:true,text:'Win Score (higher = close now)'},min:0},
-        y:{title:{display:true,text:'Revenue (THB)'},ticks:{callback:v=>fmtThb(v)}}}}
-  });
-  const sorted=[...allDeals].map(d=>{
-    const score=(6-(d.effort||3))*(pw[d.priority]||1)*(sw[d.stageNum||5]||1);
-    return {...d,score};
-  }).sort((a,b)=>b.score-a.score);
-  renderPivotTable(['Client','Win Score','Revenue','Stage','Priority'],
-    sorted.map(d=>[d.name,d.score,fmtThb(d.revenue),stageBadge(d.stage),priorityBadge(d.priority)]));
-}
-
-function renderPivot8(){
-  const sorted=[...allDeals].sort((a,b)=>(b.revenue||0)-(a.revenue||0));
-  const total=allDeals.reduce((s,d)=>s+(d.revenue||0),0);
-  const top5=sorted.slice(0,5);
-  const others=sorted.slice(5);
-  const othersRev=others.reduce((s,d)=>s+(d.revenue||0),0);
-  const labels=[...top5.map(d=>d.short||d.name),`Others (${others.length})`];
-  const values=[...top5.map(d=>d.revenue||0),othersRev];
-  const colors=['#1A2B4A','#00A896','#3B82F6','#F59E0B','#10B981','#E2E8F0'];
-  const top5pct=Math.round(top5.reduce((s,d)=>s+(d.revenue||0),0)/total*100);
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:colors,hoverOffset:4}]},
-    options:{responsive:true,plugins:{
-      legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmtThb(ctx.raw)} (${Math.round(ctx.raw/total*100)}%)`}},
-      title:{display:true,text:`Top 5 = ${top5pct}% of pipeline`,font:{size:12}}
-    }}
-  });
-  renderPivotTable(['Rank','Client','Revenue','% of Pipeline'],
-    sorted.slice(0,10).map((d,i)=>[i+1,d.name,fmtThb(d.revenue),Math.round((d.revenue||0)/total*100)+'%']));
-}
-
-function renderPivot9(){
-  const riskNum={'Low':1,'Medium':2,'High':3};
-  const pColors={'P1':'#E53E3E','P2':'#F59E0B','P3':'#94A3B8'};
-  const jitter=(i,total)=>(i-(total-1)/2)*0.15;
-  const riskGroups={'Low':[],'Medium':[],'High':[]};
-  allDeals.forEach(d=>{const r=d.competitive_risk||'Low';(riskGroups[r]=riskGroups[r]||[]).push(d);});
-  const pGroups={'P1':[],'P2':[],'P3':[]};
-  allDeals.forEach(d=>{(pGroups[d.priority||'P3']=pGroups[d.priority||'P3']||[]).push(d);});
-  const datasets=Object.entries(pGroups).map(([p,deals])=>({
-    label:p,
-    data:deals.map((d,i)=>{
-      const sameRisk=allDeals.filter(x=>x.competitive_risk===d.competitive_risk);
-      const idx=sameRisk.indexOf(d);
-      return {x:(riskNum[d.competitive_risk]||1)+jitter(idx,sameRisk.length),y:d.revenue||0,
-        r:Math.max(8,Math.min(20,(d.effort||3)*4)),name:d.name,risk:d.competitive_risk,effort:d.effort};
-    }),
-    backgroundColor:hexToRgba(pColors[p],0.75)
-  }));
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bubble',data:{datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
-      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw;return`${d.name} · Risk:${d.risk} · ${fmtThb(d.y)} · Effort:${d.effort}`;}}}},
-      scales:{x:{min:0.5,max:3.5,ticks:{callback:v=>['','Low','Medium','High'][Math.round(v)]||''},title:{display:true,text:'Competitive Risk'}},
-        y:{title:{display:true,text:'Revenue (THB)'},ticks:{callback:v=>fmtThb(v)}}}}
-  });
-  const sorted=[...allDeals].sort((a,b)=>{
-    const rv={'High':3,'Medium':2,'Low':1};
-    return (rv[b.competitive_risk]||1)-(rv[a.competitive_risk]||1)||(b.revenue||0)-(a.revenue||0);
-  });
-  renderPivotTable(['Client','Risk','Revenue','Priority','Effort'],
-    sorted.map(d=>[d.name,riskBadge(d.competitive_risk),fmtThb(d.revenue),priorityBadge(d.priority),d.effort||'–']));
-}
-
-function renderPivot10(){
-  const today=new Date();
-  const withDate=allDeals.filter(d=>d.close_date).map(d=>{
-    const days=Math.round((new Date(d.close_date)-today)/(1000*86400));
-    return {...d,days};
-  }).sort((a,b)=>a.days-b.days);
-  const noDate=allDeals.filter(d=>!d.close_date);
-  const all=[...withDate,...noDate.map(d=>({...d,days:999}))];
-  const colors=all.map(d=>d.days<90?'#10B981':d.days<180?'#F59E0B':'#E53E3E');
-  window.charts.pivotChart=new Chart(document.getElementById('pivotChart'),{
-    type:'bar',
-    data:{labels:all.map(d=>d.short||d.name),
-      datasets:[{data:all.map(d=>d.days===999?0:Math.max(0,d.days)),backgroundColor:colors,borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>{const d=all[ctx.dataIndex];return`${d.days===999?'No date':d.days+' days'} · ${fmtThb(d.revenue)}`;}}}},
-      scales:{x:{title:{display:true,text:'Days to Close'}},y:{ticks:{font:{size:10}}}}}
-  });
-  renderPivotTable(['Client','Stage','Close Date','Days Remaining','Revenue','Owner'],
-    all.map(d=>[d.name,stageBadge(d.stage),d.close_date||'–',d.days===999?'–':d.days,fmtThb(d.revenue),d.owner||'–']));
-}
-
-function renderPivotTable(headers,rows){
-  let html=`<table style="font-size:11px;border-collapse:collapse;width:100%;">
-    <thead><tr>${headers.map(h=>`<th style="padding:6px 8px;border-bottom:2px solid #e2e8f0;text-align:left;font-size:10px;color:#94a3b8;text-transform:uppercase;">${h}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;">${c}</td>`).join('')}</tr>`).join('')}</tbody>
-  </table>`;
-  document.getElementById('pivotTable').innerHTML=html;
-}
-
-function hexToRgba(hex,a){
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-
-// ─── Services Tab ─────────────────────────────────────────────────────────────
-function renderServicesTab(){
-  const services=['Survey','Express','Matching','Value-Added'];
-  const colors={'Survey':'#10B981','Express':'#3B82F6','Matching':'#F59E0B','Value-Added':'#8B5CF6'};
-  let cards='';
-  services.forEach(svc=>{
-    const deals=allDeals.filter(d=>d.service===svc);
-    const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
-    const target2026=(FIVE_YEAR_TARGETS[svc]?.['2026']||0)*1000000;
-    const pct=target2026>0?Math.min(100,Math.round(total/target2026*100)):0;
-    cards+=`<div class="service-summary">
-      <div class="svc-name" style="color:${colors[svc]}">${svc}</div>
-      <div class="svc-count">${deals.length} accounts</div>
-      <div class="svc-revenue">${fmtThb(total)}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${colors[svc]}"></div></div>
-      <div style="font-size:10px;color:var(--gray)">${pct}% of 2026 target (${fmtThb(target2026)})</div>
-    </div>`;
-  });
-  document.getElementById('serviceCards').innerHTML=cards;
-
-  // 5-year chart
-  destroyChart('targetChart');
-  const svcs=['Survey','Express','Matching','Value-Added'];
-  const years=[2026,2027,2028];
-  const barColors={'Survey':'#10B981','Express':'#3B82F6','Matching':'#F59E0B','Value-Added':'#8B5CF6'};
-  const currentData=svcs.map(s=>allDeals.filter(d=>d.service===s).reduce((a,d)=>a+(d.revenue||0),0)/1000000);
-  const datasets=[
-    {label:'Current Pipeline (M)',data:currentData,backgroundColor:'#1A2B4A',borderRadius:4},
-    ...years.map(yr=>({
-      label:`${yr} Target (M)`,
-      data:svcs.map(s=>(FIVE_YEAR_TARGETS[s]?.[yr]||0)),
-      backgroundColor:yr===2026?'rgba(0,168,150,0.6)':yr===2027?'rgba(59,130,246,0.6)':'rgba(245,158,11,0.6)',
-      borderRadius:4
-    }))
-  ];
-  window.charts.targetChart=new Chart(document.getElementById('targetChart'),{
-    type:'bar',data:{labels:svcs,datasets},
-    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
-      scales:{y:{ticks:{callback:v=>v+'M'},title:{display:true,text:'THB Millions'}}}}
-  });
-
-  // Breakdown table
-  document.getElementById('serviceBreakdownBody').innerHTML=services.map(svc=>{
-    const deals=allDeals.filter(d=>d.service===svc);
-    const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
-    const t={2026:(FIVE_YEAR_TARGETS[svc]?.['2026']||0)*1e6,2027:(FIVE_YEAR_TARGETS[svc]?.['2027']||0)*1e6,2028:(FIVE_YEAR_TARGETS[svc]?.['2028']||0)*1e6};
-    const gap=t[2026]-total;
-    return `<tr>
-      <td><strong style="color:${colors[svc]}">${svc}</strong></td>
-      <td>${deals.length}</td><td style="font-weight:600">${fmtThb(total)}</td>
-      <td>${fmtM(t[2026])}</td><td style="color:${gap>0?'var(--red)':'var(--green)'};">${gap>0?'-':''}${fmtM(Math.abs(gap))}</td>
-      <td>${fmtM(t[2027])}</td><td>${fmtM(t[2028])}</td>
-    </tr>`;
-  }).join('');
-
-  // Accordions
-  let acc='';
-  services.forEach(svc=>{
-    const deals=allDeals.filter(d=>d.service===svc).sort((a,b)=>(a.stageNum||5)-(b.stageNum||5));
-    const total=deals.reduce((s,d)=>s+(d.revenue||0),0);
-    acc+=`<div class="accordion">
-      <div class="accordion-header" onclick="toggleAccordion(this)">
-        <span>${svc} — ${deals.length} accounts · ${fmtThb(total)}</span>
-        <span>▼</span>
-      </div>
-      <div class="accordion-body">
-        <table><thead><tr><th>Client</th><th>Stage</th><th>Revenue</th><th>Owner</th><th>Notes</th></tr></thead>
-        <tbody>${deals.map(d=>`<tr>
-          <td><strong>${d.name}</strong></td>
-          <td>${stageBadge(d.stage)}</td>
-          <td style="font-weight:600;color:var(--pmc-navy-700)">${fmtThb(d.revenue)}</td>
-          <td>${d.owner||'–'}</td>
-          <td style="font-size:10px;max-width:200px;">${(d.notes||'').substring(0,80)}${d.notes?.length>80?'...':''}</td>
-        </tr>`).join('')}</tbody></table>
-      </div>
-    </div>`;
-  });
-  document.getElementById('serviceAccordions').innerHTML=acc;
-}
-
-function toggleAccordion(header){
-  const body=header.nextElementSibling;
-  body.classList.toggle('open');
-  header.querySelector('span:last-child').textContent=body.classList.contains('open')?'▲':'▼';
-}
-
-// ─── Reports Tab ──────────────────────────────────────────────────────────────
-function renderReports(){
-  const today=new Date().toISOString().split('T')[0];
-  const total=allDeals.reduce((s,d)=>s+(d.revenue||0),0);
-  const stages=['Active/Verbal','In Discussion','On Hold','Discovery','New Lead'];
-  let stageLines='';
-  stages.forEach(st=>{
-    const deals=allDeals.filter(d=>d.stage===st);
-    const rev=deals.reduce((s,d)=>s+(d.revenue||0),0);
-    stageLines+=`  • ${st}: ${deals.length} deals | ${fmtThb(rev)}\n`;
-  });
-  const p1s=allDeals.filter(d=>d.priority==='P1');
-  const p1Lines=p1s.map(d=>`  - ${d.name}: ${fmtThb(d.revenue)}`).join('\n');
-  const highRisk=allDeals.filter(d=>d.competitive_risk==='High');
-  const urgent=allDeals.filter(d=>{
-    if(!d.close_date) return false;
-    return (new Date(d.close_date)-new Date())/(1000*86400)<30;
-  });
-  const surveyPipe=allDeals.filter(d=>d.service==='Survey').reduce((s,d)=>s+(d.revenue||0),0);
-  const txt=`POSTMAN CLOUD — PIPELINE SUMMARY
-Generated: ${today} | Total Pipeline: ${fmtThb(total)} across ${allDeals.length} accounts
-${'═'.repeat(60)}
-
-STAGE BREAKDOWN:
-${stageLines}
-P1 PRIORITY ACCOUNTS (${p1s.length}):
-${p1Lines}
-
-IMMEDIATE ACTIONS REQUIRED:
-${highRisk.length>0?highRisk.map(d=>`  ⚠ HIGH RISK: ${d.name} — ${fmtThb(d.revenue)}`).join('\n'):'  None — no high-risk deals'}
-${urgent.length>0?urgent.map(d=>`  ⏰ CLOSING SOON: ${d.name} — ${d.close_date}`).join('\n'):'  No deals closing within 30 days'}
-
-5-YEAR TARGET PROGRESS:
-  2026 Survey Target: THB 12M | Current Survey Pipeline: ${fmtThb(surveyPipe)}
-  Gap: ${surveyPipe>=12000000?'ON TARGET ✓':'THB '+((12000000-surveyPipe)/1000000).toFixed(1)+'M to go'}
-
-TOP 5 ACCOUNTS BY REVENUE:
-${[...allDeals].sort((a,b)=>(b.revenue||0)-(a.revenue||0)).slice(0,5).map((d,i)=>`  ${i+1}. ${d.name} — ${fmtThb(d.revenue)} [${d.stage}] Owner: ${d.owner||'–'}`).join('\n')}
-
-Generated by Postman Cloud Sales Tool v1.0 | Capital8 Consortium`;
-  document.getElementById('summaryText').textContent=txt;
-}
-
-function copySummary(){
-  navigator.clipboard.writeText(document.getElementById('summaryText').textContent)
-    .then(()=>toast('Copied to clipboard!','success'))
-    .catch(()=>toast('Copy failed','error'));
-}
-
-function showResetConfirm(){document.getElementById('dangerConfirm').style.display='block';}
-function hideResetConfirm(){document.getElementById('dangerConfirm').style.display='none';document.getElementById('resetInput').value='';}
-
+// ═══════════════════════════════════════════════════════════════
+// DATA RESET
+// ═══════════════════════════════════════════════════════════════
+function showResetConfirm(){ document.getElementById('dangerConfirm').style.display='block'; }
+function hideResetConfirm(){ document.getElementById('dangerConfirm').style.display='none'; document.getElementById('resetInput').value=''; }
 async function doReset(){
-  if(document.getElementById('resetInput').value!=='RESET'){
-    toast('Type RESET to confirm','error');return;
-  }
+  if(document.getElementById('resetInput').value!=='RESET'){ toast('Type RESET to confirm','error'); return; }
   await fetch('/api/seed?force=true',{method:'POST'});
   hideResetConfirm();
   await loadDeals();
   toast('Data reset to defaults','success');
 }
 
-// ─── Toast ────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
 function toast(msg,type=''){
   const t=document.createElement('div');
   t.className='toast'+(type?' '+type:'');
