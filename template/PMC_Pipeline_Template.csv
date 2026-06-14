@@ -1,0 +1,3 @@
+name,short,sector,useCase,service,stage,revenue,fee,volume,owner,notes,priority,effort,competitive_risk,close_date,created_by
+Example Client Co.,EXAM,Banking,KYC document collection,Survey,Discovery,500000,THB 300/txn,1500,K.Name,First meeting done. Proposal pending.,P2,3,Low,2026-12-31,Your Name
+# Valid values: service=Survey|Express|Matching|Value-Added|Commerce | stage=Active/Verbal|In Discussion|On Hold|Discovery|New Lead | priority=P1|P2|P3 | effort=1-5 | competitive_risk=Low|Medium|High
