@@ -72,38 +72,39 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 
 /* ── SIDEBAR ──────────────────────────────────────────── */
 #sidebar{
-  width:248px;flex-shrink:0;background:var(--pmc-navy-800);
+  width:224px;flex-shrink:0;background:var(--pmc-navy-800);
   display:flex;flex-direction:column;height:100vh;overflow-y:auto;
   position:relative;z-index:10;
 }
-.sb-header{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
-.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-.sb-logo img{height:38px;display:block;}
-.sb-subtitle{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--pmc-red-300);margin-top:2px;}
-.sb-nav{flex:1;padding:12px 0;}
+.sb-header{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:10px;}
+.sb-logo{display:block;}
+.sb-logo img{height:44px;display:block;}
+.sb-subtitle{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--pmc-red-300);font-family:var(--font-display);font-weight:500;}
+.sb-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:3px;}
+.sb-section-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,212,234,.55);padding:8px 12px 6px;font-family:var(--font-display);font-weight:500;}
 .sb-nav-item{
-  display:flex;align-items:center;gap:12px;padding:11px 20px;
-  cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;
-  transition:background .15s,color .15s;position:relative;user-select:none;
+  display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;
+  border-radius:10px;border:none;cursor:pointer;
+  font-family:var(--font-display);font-weight:500;font-size:14px;text-align:left;
+  background:transparent;color:rgba(201,212,234,.7);
+  transition:background .15s,color .15s,box-shadow .15s;user-select:none;
 }
-.sb-nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
+.sb-nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
 .sb-nav-item.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 var(--pmc-red-500);}
-.sb-nav-item .nav-icon{font-size:16px;width:20px;text-align:center;}
-.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:8px 20px;}
-.sb-section-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:8px 20px 4px;}
-.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07);}
-.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-nav-item .nav-icon{font-size:16px;display:inline-flex;}
+.sb-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);}
+.sb-user{display:flex;align-items:center;gap:11px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05);}
 .sb-avatar{
-  width:36px;height:36px;border-radius:50%;background:var(--pmc-red-500);
-  color:#fff;font-family:var(--font-display);font-size:14px;font-weight:500;
+  width:38px;height:38px;border-radius:50%;background:var(--pmc-red-500);
+  color:#fff;font-family:var(--font-display);font-weight:500;font-size:14px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .sb-user-info{flex:1;min-width:0;}
-.sb-user-name{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-user-role{font-size:11px;color:rgba(255,255,255,.4);}
-.sb-logout{background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:16px;padding:4px;transition:color .15s;flex-shrink:0;}
-.sb-logout:hover{color:rgba(255,255,255,.8);}
-#syncTime{font-size:10px;color:rgba(255,255,255,.25);padding:8px 20px 0;text-align:center;}
+.sb-user-name{font-size:13px;font-weight:500;font-family:var(--font-display);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:11px;color:rgba(201,212,234,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-logout{background:transparent;border:none;color:rgba(201,212,234,.55);cursor:pointer;display:inline-flex;padding:4px;transition:color .15s;flex-shrink:0;}
+.sb-logout:hover{color:#fff;}
+#syncTime{font-size:10px;color:rgba(255,255,255,.2);padding:6px 18px;text-align:center;}
 
 /* ── MAIN AREA ────────────────────────────────────────── */
 #main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
@@ -349,18 +350,19 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
       <div class="sb-subtitle">Sales Operating System</div>
     </div>
     <nav class="sb-nav">
-      <div class="sb-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
-        <span class="nav-icon">📊</span> <span id="nav-dashboard">Dashboard</span>
-      </div>
-      <div class="sb-nav-item" onclick="switchTab('pipeline',this)" data-tab="pipeline">
-        <span class="nav-icon">📋</span> <span id="nav-pipeline">Pipeline</span>
-      </div>
-      <div class="sb-nav-item" onclick="switchTab('analysis',this)" data-tab="analysis">
-        <span class="nav-icon">🔬</span> <span id="nav-analysis">Analysis</span>
-      </div>
-      <div class="sb-nav-item" onclick="switchTab('reports',this)" data-tab="reports">
-        <span class="nav-icon">📄</span> <span id="nav-reports">Reports</span>
-      </div>
+      <div class="sb-section-label" id="nav-menu-label">Menu</div>
+      <button class="sb-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
+        <span class="nav-icon">📊</span><span id="nav-dashboard">Dashboard</span>
+      </button>
+      <button class="sb-nav-item" onclick="switchTab('pipeline',this)" data-tab="pipeline">
+        <span class="nav-icon">📋</span><span id="nav-pipeline">Pipeline</span>
+      </button>
+      <button class="sb-nav-item" onclick="switchTab('analysis',this)" data-tab="analysis">
+        <span class="nav-icon">🔬</span><span id="nav-analysis">Analysis</span>
+      </button>
+      <button class="sb-nav-item" onclick="switchTab('reports',this)" data-tab="reports">
+        <span class="nav-icon">📄</span><span id="nav-reports">Reports</span>
+      </button>
     </nav>
     <div id="syncTime"></div>
     <div class="sb-footer">
@@ -407,7 +409,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
           <div class="chart-card" id="forecastCard">
             <h3 id="kpi-forecast-title">Forecast by Month</h3>
             <div class="sub" id="kpi-forecast-sub">Open pipeline vs weighted forecast</div>
-            <div id="forecastChart" style="height:200px;"></div>
+            <div id="forecastChart"></div>
           </div>
           <div class="chart-card" id="funnelCard">
             <h3 id="kpi-funnel-title">Pipeline Funnel</h3>
