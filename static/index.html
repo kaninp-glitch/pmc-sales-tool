@@ -72,38 +72,38 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 
 /* ── SIDEBAR ──────────────────────────────────────────── */
 #sidebar{
-  width:224px;flex-shrink:0;background:var(--pmc-navy-800);
+  width:248px;flex-shrink:0;background:var(--pmc-navy-800);
   display:flex;flex-direction:column;height:100vh;overflow-y:auto;
   position:relative;z-index:10;
 }
-.sb-header{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:10px;}
-.sb-logo img{height:44px;display:block;}
-.sb-subtitle{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--pmc-red-300);font-family:var(--font-display);font-weight:500;}
-.sb-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:3px;}
-.sb-section-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,212,234,.55);padding:8px 12px 6px;font-family:var(--font-display);font-weight:500;}
+.sb-header{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.sb-logo img{height:38px;display:block;}
+.sb-subtitle{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--pmc-red-300);margin-top:2px;}
+.sb-nav{flex:1;padding:12px 0;}
 .sb-nav-item{
-  display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;
-  border-radius:10px;border:none;cursor:pointer;
-  font-family:var(--font-display);font-weight:500;font-size:14px;text-align:left;
-  background:transparent;color:var(--pmc-line-300);
-  transition:background .15s,color .15s,box-shadow .15s;user-select:none;
+  display:flex;align-items:center;gap:12px;padding:11px 20px;
+  cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;
+  transition:background .15s,color .15s;position:relative;user-select:none;
 }
-.sb-nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.sb-nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
 .sb-nav-item.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 var(--pmc-red-500);}
-.sb-nav-item .nav-icon{font-size:16px;display:inline-flex;}
-.sb-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);}
-.sb-user{display:flex;align-items:center;gap:11px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05);}
+.sb-nav-item .nav-icon{font-size:16px;width:20px;text-align:center;}
+.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:8px 20px;}
+.sb-section-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:8px 20px 4px;}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07);}
+.sb-user{display:flex;align-items:center;gap:10px;}
 .sb-avatar{
-  width:38px;height:38px;border-radius:50%;background:var(--pmc-red-500);
-  color:#fff;font-family:var(--font-display);font-weight:500;font-size:14px;
+  width:36px;height:36px;border-radius:50%;background:var(--pmc-red-500);
+  color:#fff;font-family:var(--font-display);font-size:14px;font-weight:500;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .sb-user-info{flex:1;min-width:0;}
-.sb-user-name{font-size:13px;font-weight:500;font-family:var(--font-display);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-user-role{font-size:11px;color:var(--pmc-line-300);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sb-logout{background:transparent;border:none;color:var(--pmc-line-300);cursor:pointer;display:inline-flex;padding:4px;transition:color .15s;flex-shrink:0;}
-.sb-logout:hover{color:#fff;}
-#syncTime{font-size:10px;color:rgba(255,255,255,.2);padding:6px 18px;text-align:center;}
+.sb-user-name{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:11px;color:rgba(255,255,255,.4);}
+.sb-logout{background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:16px;padding:4px;transition:color .15s;flex-shrink:0;}
+.sb-logout:hover{color:rgba(255,255,255,.8);}
+#syncTime{font-size:10px;color:rgba(255,255,255,.25);padding:8px 20px 0;text-align:center;}
 
 /* ── MAIN AREA ────────────────────────────────────────── */
 #main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
@@ -131,7 +131,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 .tb-bell-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--pmc-red-500);border-radius:50%;border:1.5px solid var(--bg);}
 
 /* ── CONTENT ──────────────────────────────────────────── */
-#content{flex:1;overflow-y:auto;padding:20px 24px;}
+#content{flex:1;overflow-y:auto;padding:24px;}
 .tab-pane{display:none;}
 .tab-pane.active{display:block;}
 
@@ -343,23 +343,24 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sb-header">
-      <div class="sb-logo"><img src="/static/assets/pmc-logo-white.png" alt="Postman Cloud"/></div>
+      <div class="sb-logo">
+        <img src="/static/assets/pmc-logo-white.png" alt="Postman Cloud"/>
+      </div>
       <div class="sb-subtitle">Sales Operating System</div>
     </div>
     <nav class="sb-nav">
-      <div class="sb-section-label" id="nav-menu-label">Menu</div>
-      <button class="sb-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
-        <span class="nav-icon">📊</span><span id="nav-dashboard">Dashboard</span>
-      </button>
-      <button class="sb-nav-item" onclick="switchTab('pipeline',this)" data-tab="pipeline">
-        <span class="nav-icon">📋</span><span id="nav-pipeline">Pipeline</span>
-      </button>
-      <button class="sb-nav-item" onclick="switchTab('analysis',this)" data-tab="analysis">
-        <span class="nav-icon">🔬</span><span id="nav-analysis">Analysis</span>
-      </button>
-      <button class="sb-nav-item" onclick="switchTab('reports',this)" data-tab="reports">
-        <span class="nav-icon">📄</span><span id="nav-reports">Reports</span>
-      </button>
+      <div class="sb-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
+        <span class="nav-icon">📊</span> <span id="nav-dashboard">Dashboard</span>
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('pipeline',this)" data-tab="pipeline">
+        <span class="nav-icon">📋</span> <span id="nav-pipeline">Pipeline</span>
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('analysis',this)" data-tab="analysis">
+        <span class="nav-icon">🔬</span> <span id="nav-analysis">Analysis</span>
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('reports',this)" data-tab="reports">
+        <span class="nav-icon">📄</span> <span id="nav-reports">Reports</span>
+      </div>
     </nav>
     <div id="syncTime"></div>
     <div class="sb-footer">
@@ -472,13 +473,13 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
           <button class="pivot-btn" onclick="showPivot(9,this)">Risk vs Revenue</button>
           <button class="pivot-btn" onclick="showPivot(10,this)">Pipeline Velocity</button>
         </div>
-        <div class="chart-card" style="margin-bottom:14px;">
+        <div class="chart-card" style="margin-bottom:20px;">
           <h3 id="pivotTitle">Revenue vs Sales Effort</h3>
-          <p style="font-size:11px;color:var(--text-faint);margin-bottom:10px;" id="pivotInsight"></p>
+          <p style="font-size:12px;color:var(--text-faint);margin-bottom:14px;" id="pivotInsight"></p>
           <div style="position:relative;"><canvas id="pivotChart" height="200"></canvas></div>
           <div id="pivotTable" style="margin-top:16px;overflow-x:auto;"></div>
         </div>
-        <div class="chart-row two-eq" style="margin-bottom:16px;">
+        <div class="chart-row two-eq" style="margin-bottom:20px;">
           <div class="chart-card">
             <h3>Service Mix</h3>
             <div class="sub">Pipeline by service</div>
@@ -624,11 +625,8 @@ const STAGE_COLORS_MAP = {
   'Active/Verbal':'#c98a00','In Discussion':'#243a6e','Discovery':'#34508c','New Lead':'#1a2d5a','On Hold':'#8b93a6'
 };
 const STAGE_CARD_BG = {
-  'Active/Verbal':'rgba(201,138,0,.07)',
-  'In Discussion':'rgba(36,58,110,.07)',
-  'Discovery':'rgba(52,80,140,.06)',
-  'New Lead':'rgba(26,45,90,.05)',
-  'On Hold':'rgba(139,147,166,.07)'
+  'Active/Verbal':'rgba(201,138,0,.07)','In Discussion':'rgba(36,58,110,.07)',
+  'Discovery':'rgba(52,80,140,.06)','New Lead':'rgba(26,45,90,.05)','On Hold':'rgba(139,147,166,.07)'
 };
 const SERVICE_COLORS = {'Survey':'#1f8a5b','Express':'#243a6e','Matching':'#c98a00','Value-Added':'#7c3aed','Commerce':'#e8000d'};
 const FIVE_YEAR_TARGETS = {
@@ -960,29 +958,28 @@ function renderForecastChart(deals){
   const keys=Object.keys(months).sort().slice(-8);
   if(!keys.length){el.innerHTML='<div class="empty-state">No deals with close dates</div>';return;}
   const maxVal=Math.max(...keys.map(k=>months[k].open),1);
-  // Fixed pixel layout: labels 54px | gap 4px | bars ~(total-54-64) | value 60px
-  const VW=460,lblW=54,valW=64,barX=lblW+4,barW=VW-lblW-valW-8;
+  // Fixed viewBox: 54px labels | bars | 62px values — all pixel-based, no overflow
+  const VW=460,lblW=54,valW=62,barX=lblW+4,barW=VW-lblW-valW-8;
   const barH=22,gap=10,H=keys.length*(barH+gap)+20;
   let svg=`<svg viewBox="0 0 ${VW} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:var(--font-body)">`;
   keys.forEach((k,i)=>{
     const y=i*(barH+gap);
-    const oPx=Math.max((months[k].open/maxVal)*barW,2);
-    const wPx=Math.max((months[k].wtd/maxVal)*barW,2);
+    const oPx=Math.max((months[k].open/maxVal)*barW,2).toFixed(1);
+    const wPx=Math.max((months[k].wtd/maxVal)*barW,2).toFixed(1);
     const label=new Date(k+'-01').toLocaleDateString('en',{month:'short',year:'2-digit'});
     svg+=`
       <text x="${lblW-2}" y="${y+barH*.72}" font-size="11" fill="var(--text-faint)" text-anchor="end">${label}</text>
       <rect x="${barX}" y="${y}" width="${barW}" height="${barH}" rx="4" fill="#eef0f6"/>
-      <rect x="${barX}" y="${y}" width="${oPx.toFixed(1)}" height="${barH}" rx="4" fill="var(--pmc-line-300)"/>
-      <rect x="${barX}" y="${y}" width="${wPx.toFixed(1)}" height="${barH}" rx="4" fill="var(--pmc-red-500)" opacity=".82"/>
-      <text x="${barX+barW+6}" y="${y+barH*.72}" font-size="11" fill="var(--text-strong)" font-weight="600">${fmtThb(months[k].open)}</text>
-    `;
+      <rect x="${barX}" y="${y}" width="${oPx}" height="${barH}" rx="4" fill="var(--pmc-line-300)"/>
+      <rect x="${barX}" y="${y}" width="${wPx}" height="${barH}" rx="4" fill="var(--pmc-red-500)" opacity=".82"/>
+      <text x="${barX+barW+5}" y="${y+barH*.72}" font-size="11" fill="var(--text-strong)" font-weight="600">${fmtThb(months[k].open)}</text>`;
   });
-  const legY=H-6;
+  const legY=H-5;
   svg+=`
-    <rect x="${barX}" y="${legY-8}" width="10" height="10" rx="2" fill="var(--pmc-line-300)"/>
-    <text x="${barX+14}" y="${legY}" font-size="10" fill="var(--text-faint)">Open</text>
-    <rect x="${barX+54}" y="${legY-8}" width="10" height="10" rx="2" fill="var(--pmc-red-500)" opacity=".82"/>
-    <text x="${barX+68}" y="${legY}" font-size="10" fill="var(--text-faint)">Weighted</text>
+    <rect x="${barX}" y="${legY-9}" width="10" height="10" rx="2" fill="var(--pmc-line-300)"/>
+    <text x="${barX+13}" y="${legY}" font-size="10" fill="var(--text-faint)">Open</text>
+    <rect x="${barX+52}" y="${legY-9}" width="10" height="10" rx="2" fill="var(--pmc-red-500)" opacity=".82"/>
+    <text x="${barX+65}" y="${legY}" font-size="10" fill="var(--text-faint)">Weighted</text>
   </svg>`;
   el.innerHTML=svg;
 }
