@@ -18,7 +18,6 @@ from pydantic import BaseModel
 
 SESSION_DURATION_HOURS = 24
 
-# User directory — email is the login name
 USERS = {
     "ajaree.to@thailandpost.com":    {"name": "Ajaree Tochai",               "password": "PMC@S&M2026"},
     "chawachit.so@thailandpost.com": {"name": "Chawachit Soonthornsaratoon", "password": "PMC@S&M2026"},
@@ -28,95 +27,113 @@ USERS = {
     "pimparat.p@beryl8.com":         {"name": "Pimparat Panchatree",         "password": "PMC@S&M2026"},
 }
 
-# In-memory session store: {token: {"expires_at": datetime, "email": str, "name": str}}
 _sessions: dict = {}
 
-BASE_DIR = Path(__file__).parent
-DB_PATH = BASE_DIR / "pipeline.db"
-STATIC_DIR = BASE_DIR / "static"
+# ─── Database config ─────────────────────────────────────────────────────────
+
+# If DATABASE_URL is set (Render PostgreSQL), use PostgreSQL.
+# Otherwise fall back to local SQLite for development.
+DATABASE_URL = os.environ.get("DATABASE_URL")
+_PG = bool(DATABASE_URL)
+
+if _PG:
+    import psycopg2
+    import psycopg2.extras
+
+BASE_DIR    = Path(__file__).parent
+_PERSIST    = Path("/data")
+DB_PATH     = (_PERSIST / "pipeline.db") if _PERSIST.exists() else (BASE_DIR / "pipeline.db")
+STATIC_DIR  = BASE_DIR / "static"
 TEMPLATE_DIR = BASE_DIR / "template"
 
-app = FastAPI(title="PMC Sales Pipeline")
+# DDL type tokens differ between engines
+_PK  = "SERIAL PRIMARY KEY" if _PG else "INTEGER PRIMARY KEY AUTOINCREMENT"
+_NUM = "FLOAT"              if _PG else "REAL"
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ─── Auth middleware ──────────────────────────────────────────────────────────
-
-def _valid_session(request: Request) -> dict | None:
-    """Returns session dict {expires_at, email, name} if valid, else None."""
-    token = request.cookies.get("pmc_session")
-    if not token or token not in _sessions:
-        return None
-    session = _sessions[token]
-    if session["expires_at"] < datetime.now():
-        del _sessions[token]
-        return None
-    return session
-
-@app.middleware("http")
-async def auth_middleware(request: Request, call_next):
-    path = request.url.path
-    # Always allow: login endpoint + static assets + main HTML (has embedded login screen)
-    public = ["/api/login", "/api/me", "/static/", "/favicon"]
-    if path == "/" or any(path.startswith(p) for p in public):
-        return await call_next(request)
-    # Block everything else without a valid session
-    if not _valid_session(request):
-        if path.startswith("/api/"):
-            return JSONResponse({"error": "Unauthorized"}, status_code=401)
-        # For non-API routes (e.g. direct URL access), redirect to root
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/")
-    return await call_next(request)
-
-# ─── Database ────────────────────────────────────────────────────────────────
+# ─── DB helpers ──────────────────────────────────────────────────────────────
 
 def get_db():
+    """Open and return a raw DB connection."""
+    if _PG:
+        conn = psycopg2.connect(DATABASE_URL)
+        return conn
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+def _exec(conn, sql, params=()):
+    """Execute SQL on either engine; returns a cursor."""
+    if _PG:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute(sql.replace("?", "%s"), params)
+        return cur
+    return conn.execute(sql, params)
+
+def _rows(cur):
+    return [dict(r) for r in cur.fetchall()]
+
+def _row(cur):
+    r = cur.fetchone()
+    return dict(r) if r else None
+
+def _insert(conn, sql, params):
+    """INSERT a row and return the new id."""
+    if _PG:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute(sql.replace("?", "%s") + " RETURNING id", params)
+        return cur.fetchone()["id"]
+    conn.execute(sql, params)
+    return conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+# ─── Schema ──────────────────────────────────────────────────────────────────
+
 def init_db():
     conn = get_db()
-    conn.executescript("""
-    CREATE TABLE IF NOT EXISTS deals (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        short TEXT,
-        sector TEXT,
-        useCase TEXT,
-        service TEXT,
-        stage TEXT,
-        stageNum INTEGER,
-        revenue REAL,
-        fee TEXT,
-        volume INTEGER,
-        owner TEXT,
-        notes TEXT,
-        priority TEXT,
-        effort INTEGER,
-        competitive_risk TEXT,
-        close_date TEXT,
-        created_at TEXT,
-        updated_at TEXT,
-        created_by TEXT
-    );
-    CREATE TABLE IF NOT EXISTS activities (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        deal_id INTEGER,
-        action TEXT,
-        field_changed TEXT,
-        old_value TEXT,
-        new_value TEXT,
-        user_name TEXT,
-        timestamp TEXT
-    );
+    _exec(conn, f"""
+        CREATE TABLE IF NOT EXISTS deals (
+            id                {_PK},
+            name              TEXT NOT NULL,
+            short             TEXT,
+            sector            TEXT,
+            useCase           TEXT,
+            service           TEXT,
+            stage             TEXT,
+            stageNum          INTEGER,
+            revenue           {_NUM},
+            fee               TEXT,
+            volume            INTEGER,
+            owner             TEXT,
+            notes             TEXT,
+            priority          TEXT,
+            effort            INTEGER,
+            competitive_risk  TEXT,
+            close_date        TEXT,
+            created_at        TEXT,
+            updated_at        TEXT,
+            created_by        TEXT,
+            jobs_year         INTEGER,
+            contact_name      TEXT,
+            contact_email     TEXT,
+            contact_phone     TEXT,
+            budget_status     TEXT,
+            decision_maker    TEXT,
+            next_action       TEXT,
+            contract_period   INTEGER,
+            revenue_per_year  {_NUM},
+            revenue_per_month {_NUM}
+        )
+    """)
+    _exec(conn, f"""
+        CREATE TABLE IF NOT EXISTS activities (
+            id            {_PK},
+            deal_id       INTEGER,
+            action        TEXT,
+            field_changed TEXT,
+            old_value     TEXT,
+            new_value     TEXT,
+            user_name     TEXT,
+            timestamp     TEXT
+        )
     """)
     conn.commit()
     conn.close()
@@ -124,23 +141,26 @@ def init_db():
 init_db()
 
 def migrate_db():
-    """Add any missing columns to existing DB without data loss."""
+    """Safely add any missing columns to an existing DB (no data loss)."""
     conn = get_db()
     new_cols = [
-        ("jobs_year",        "INTEGER"),
-        ("contact_name",     "TEXT"),
-        ("contact_email",    "TEXT"),
-        ("contact_phone",    "TEXT"),
-        ("budget_status",    "TEXT"),
-        ("decision_maker",   "TEXT"),
-        ("next_action",      "TEXT"),
-        ("contract_period",  "INTEGER"),
-        ("revenue_per_year", "REAL"),
-        ("revenue_per_month","REAL"),
+        ("jobs_year",         "INTEGER"),
+        ("contact_name",      "TEXT"),
+        ("contact_email",     "TEXT"),
+        ("contact_phone",     "TEXT"),
+        ("budget_status",     "TEXT"),
+        ("decision_maker",    "TEXT"),
+        ("next_action",       "TEXT"),
+        ("contract_period",   "INTEGER"),
+        ("revenue_per_year",  _NUM),
+        ("revenue_per_month", _NUM),
     ]
     for col, typ in new_cols:
         try:
-            conn.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
+            if _PG:
+                _exec(conn, f"ALTER TABLE deals ADD COLUMN IF NOT EXISTS {col} {typ}")
+            else:
+                _exec(conn, f"ALTER TABLE deals ADD COLUMN {col} {typ}")
         except Exception:
             pass  # column already exists
     conn.commit()
@@ -153,15 +173,15 @@ migrate_db()
 STAGE_MAP = {
     "active/verbal": 1,
     "in discussion": 2,
-    "on hold": 3,
-    "discovery": 4,
-    "new lead": 5,
+    "on hold":       3,
+    "discovery":     4,
+    "new lead":      5,
 }
 
 def stage_to_num(stage: str) -> int:
     return STAGE_MAP.get(stage.strip().lower(), 5)
 
-# ─── Seed data ────────────────────────────────────────────────────────────────
+# ─── Seed data ───────────────────────────────────────────────────────────────
 
 SEED_DATA = [
   {"name":"JMT Network Services PCL","short":"JMT","sector":"Asset Mgmt","useCase":"Property pin-drop & address validation survey","service":"Survey","stage":"Active/Verbal","stageNum":1,"revenue":62650,"fee":"THB 50/txn","volume":1253,"owner":"K.Biin","notes":"Contract signed THP side; JMT counter-signature pending. 1,253 txns confirmed.","priority":"P1","effort":2,"competitive_risk":"Low","close_date":"2026-07-31","created_by":"system"},
@@ -193,7 +213,7 @@ SEED_DATA = [
   {"name":"PWA / กปภ. Water Authority","short":"PWA","sector":"Gov Utility","useCase":"Water meter reading via OCR + rider network","service":"Survey","stage":"New Lead","stageNum":5,"revenue":33000000,"fee":"THB 15/meter","volume":2200000,"owner":"THP Speed","notes":"STRATEGIC GOVT: 2.2M meters x THB 15 = THB 33M/mo potential. Long procurement cycle. THP govt team to lead.","priority":"P1","effort":5,"competitive_risk":"Low","close_date":"2027-12-31","created_by":"system"},
 ]
 
-# ─── Models ───────────────────────────────────────────────────────────────────
+# ─── Pydantic models ─────────────────────────────────────────────────────────
 
 class DealCreate(BaseModel):
     name: str
@@ -253,22 +273,58 @@ class DealUpdate(BaseModel):
     revenue_per_year: Optional[float] = None
     revenue_per_month: Optional[float] = None
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
-
-def row_to_dict(row):
-    return dict(row) if row else None
+# ─── Helpers ─────────────────────────────────────────────────────────────────
 
 def now_iso():
     return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 def log_activity(conn, deal_id, action, field_changed, old_value, new_value, user_name):
-    conn.execute(
-        "INSERT INTO activities (deal_id, action, field_changed, old_value, new_value, user_name, timestamp) VALUES (?,?,?,?,?,?,?)",
-        (deal_id, action, field_changed, str(old_value) if old_value is not None else None,
-         str(new_value) if new_value is not None else None, user_name, now_iso())
+    _exec(conn,
+        "INSERT INTO activities (deal_id,action,field_changed,old_value,new_value,user_name,timestamp) VALUES (?,?,?,?,?,?,?)",
+        (deal_id, action, field_changed,
+         str(old_value) if old_value is not None else None,
+         str(new_value) if new_value is not None else None,
+         user_name, now_iso())
     )
 
-# ─── Routes ───────────────────────────────────────────────────────────────────
+# ─── FastAPI app ─────────────────────────────────────────────────────────────
+
+app = FastAPI(title="PMC Sales Pipeline")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ─── Auth middleware ──────────────────────────────────────────────────────────
+
+def _valid_session(request: Request) -> dict | None:
+    token = request.cookies.get("pmc_session")
+    if not token or token not in _sessions:
+        return None
+    session = _sessions[token]
+    if session["expires_at"] < datetime.now():
+        del _sessions[token]
+        return None
+    return session
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    path = request.url.path
+    public = ["/api/login", "/api/me", "/static/", "/favicon"]
+    if path == "/" or any(path.startswith(p) for p in public):
+        return await call_next(request)
+    if not _valid_session(request):
+        if path.startswith("/api/"):
+            return JSONResponse({"error": "Unauthorized"}, status_code=401)
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/")
+    return await call_next(request)
+
+# ─── Deal routes ─────────────────────────────────────────────────────────────
 
 @app.get("/")
 def serve_index():
@@ -277,30 +333,31 @@ def serve_index():
 @app.get("/api/deals")
 def list_deals():
     conn = get_db()
-    rows = conn.execute("SELECT * FROM deals ORDER BY stageNum, revenue DESC").fetchall()
+    rows = _rows(_exec(conn, "SELECT * FROM deals ORDER BY stageNum, revenue DESC"))
     conn.close()
-    return [dict(r) for r in rows]
+    return rows
 
 @app.get("/api/deals/{deal_id}")
 def get_deal(deal_id: int):
     conn = get_db()
-    row = conn.execute("SELECT * FROM deals WHERE id=?", (deal_id,)).fetchone()
+    row = _row(_exec(conn, "SELECT * FROM deals WHERE id=?", (deal_id,)))
     conn.close()
     if not row:
         raise HTTPException(404, "Deal not found")
-    return dict(row)
+    return row
 
 @app.post("/api/deals")
 def create_deal(deal: DealCreate, request: Request):
     conn = get_db()
-    now = now_iso()
-    stage = deal.stage or "New Lead"
+    now  = now_iso()
+    stage     = deal.stage or "New Lead"
     stage_num = deal.stageNum if deal.stageNum else stage_to_num(stage)
-    conn.execute(
-        """INSERT INTO deals (name,short,sector,useCase,service,stage,stageNum,revenue,fee,volume,
-           owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by,
-           jobs_year,contact_name,contact_email,contact_phone,budget_status,decision_maker,
-           next_action,contract_period,revenue_per_year,revenue_per_month)
+    new_id = _insert(conn,
+        """INSERT INTO deals
+           (name,short,sector,useCase,service,stage,stageNum,revenue,fee,volume,
+            owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by,
+            jobs_year,contact_name,contact_email,contact_phone,budget_status,decision_maker,
+            next_action,contract_period,revenue_per_year,revenue_per_month)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (deal.name, deal.short, deal.sector, deal.useCase, deal.service, stage, stage_num,
          deal.revenue, deal.fee, deal.volume, deal.owner, deal.notes, deal.priority,
@@ -309,67 +366,68 @@ def create_deal(deal: DealCreate, request: Request):
          deal.budget_status, deal.decision_maker, deal.next_action,
          deal.contract_period, deal.revenue_per_year, deal.revenue_per_month)
     )
-    new_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     log_activity(conn, new_id, "created", None, None, deal.name, deal.created_by or "unknown")
     conn.commit()
-    row = conn.execute("SELECT * FROM deals WHERE id=?", (new_id,)).fetchone()
+    row = _row(_exec(conn, "SELECT * FROM deals WHERE id=?", (new_id,)))
     conn.close()
-    return dict(row)
+    return row
 
 @app.put("/api/deals/{deal_id}")
 def update_deal(deal_id: int, deal: DealUpdate, user: str = Query(default="unknown")):
     conn = get_db()
-    existing = conn.execute("SELECT * FROM deals WHERE id=?", (deal_id,)).fetchone()
-    if not existing:
+    old = _row(_exec(conn, "SELECT * FROM deals WHERE id=?", (deal_id,)))
+    if not old:
         conn.close()
         raise HTTPException(404, "Deal not found")
-    old = dict(existing)
     updates = {k: v for k, v in deal.model_dump().items() if v is not None}
     if "stage" in updates and "stageNum" not in updates:
         updates["stageNum"] = stage_to_num(updates["stage"])
     updates["updated_at"] = now_iso()
     set_clause = ", ".join(f"{k}=?" for k in updates)
-    values = list(updates.values()) + [deal_id]
-    conn.execute(f"UPDATE deals SET {set_clause} WHERE id=?", values)
+    values     = list(updates.values()) + [deal_id]
+    _exec(conn, f"UPDATE deals SET {set_clause} WHERE id=?", values)
     for field, new_val in updates.items():
         if field == "updated_at":
             continue
         if str(old.get(field)) != str(new_val):
             log_activity(conn, deal_id, "updated", field, old.get(field), new_val, user)
     conn.commit()
-    row = conn.execute("SELECT * FROM deals WHERE id=?", (deal_id,)).fetchone()
+    row = _row(_exec(conn, "SELECT * FROM deals WHERE id=?", (deal_id,)))
     conn.close()
-    return dict(row)
+    return row
 
 @app.delete("/api/deals/{deal_id}")
 def delete_deal(deal_id: int):
     conn = get_db()
-    row = conn.execute("SELECT * FROM deals WHERE id=?", (deal_id,)).fetchone()
+    row = _row(_exec(conn, "SELECT * FROM deals WHERE id=?", (deal_id,)))
     if not row:
         conn.close()
         raise HTTPException(404, "Deal not found")
-    conn.execute("DELETE FROM deals WHERE id=?", (deal_id,))
-    conn.execute("DELETE FROM activities WHERE deal_id=?", (deal_id,))
+    _exec(conn, "DELETE FROM deals WHERE id=?",           (deal_id,))
+    _exec(conn, "DELETE FROM activities WHERE deal_id=?", (deal_id,))
     conn.commit()
     conn.close()
     return {"deleted": deal_id}
 
+# ─── Seed ────────────────────────────────────────────────────────────────────
+
 @app.post("/api/seed")
 def seed_deals(force: bool = Query(default=False)):
     conn = get_db()
-    count = conn.execute("SELECT COUNT(*) FROM deals").fetchone()[0]
+    count = _exec(conn, "SELECT COUNT(*) AS cnt FROM deals").fetchone()["cnt"]
     if count > 0 and not force:
         conn.close()
         return {"message": "Already seeded", "count": count}
     if force:
-        conn.execute("DELETE FROM deals")
-        conn.execute("DELETE FROM activities")
+        _exec(conn, "DELETE FROM deals")
+        _exec(conn, "DELETE FROM activities")
     now = now_iso()
     inserted = 0
     for d in SEED_DATA:
-        conn.execute(
-            """INSERT INTO deals (name,short,sector,useCase,service,stage,stageNum,revenue,fee,volume,
-               owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by)
+        _insert(conn,
+            """INSERT INTO deals
+               (name,short,sector,useCase,service,stage,stageNum,revenue,fee,volume,
+                owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by)
                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (d["name"], d.get("short"), d.get("sector"), d.get("useCase"), d.get("service"),
              d.get("stage"), d.get("stageNum"), d.get("revenue"), d.get("fee"), d.get("volume"),
@@ -381,16 +439,14 @@ def seed_deals(force: bool = Query(default=False)):
     conn.close()
     return {"message": "Seeded", "inserted": inserted}
 
+# ─── Import / Export ─────────────────────────────────────────────────────────
+
 @app.post("/api/import/csv")
 async def import_csv(file: UploadFile = File(...)):
-    content = await file.read()
+    content  = await file.read()
     filename = file.filename or ""
-    errors = []
+    errors   = []
     imported = 0
-
-    FIELDS = ["name","short","sector","useCase","service","stage","revenue","fee","volume",
-              "owner","notes","priority","effort","competitive_risk","close_date","created_by"]
-
     rows_data = []
 
     if filename.lower().endswith(".xlsx"):
@@ -414,7 +470,7 @@ async def import_csv(file: UploadFile = File(...)):
         except Exception as e:
             return JSONResponse({"error": f"Excel parse error: {e}"}, status_code=400)
     else:
-        text = content.decode("utf-8-sig", errors="replace")
+        text   = content.decode("utf-8-sig", errors="replace")
         reader = csv.DictReader(io.StringIO(text))
         for row in reader:
             if row.get("name","").startswith("#"):
@@ -422,34 +478,31 @@ async def import_csv(file: UploadFile = File(...)):
             rows_data.append({k.strip().lower(): v.strip() for k, v in row.items()})
 
     conn = get_db()
-    now = now_iso()
+    now  = now_iso()
     for i, row in enumerate(rows_data):
         name = row.get("name","").strip()
         if not name or name.startswith("#"):
             continue
         try:
-            revenue_raw = row.get("revenue","0") or "0"
-            revenue_raw = revenue_raw.replace(",","").replace("THB","").strip()
-            revenue = float(revenue_raw) if revenue_raw else 0.0
+            revenue_raw = (row.get("revenue","0") or "0").replace(",","").replace("THB","").strip()
+            revenue     = float(revenue_raw) if revenue_raw else 0.0
         except:
             revenue = 0.0
         try:
-            volume_raw = row.get("volume","0") or "0"
-            volume = int(str(volume_raw).replace(",","").strip()) if volume_raw else 0
+            volume = int(str(row.get("volume","0") or "0").replace(",","").strip())
         except:
             volume = 0
         try:
             effort = max(1, min(5, int(row.get("effort","3") or "3")))
         except:
             effort = 3
-        stage = row.get("stage","New Lead") or "New Lead"
+        stage     = row.get("stage","New Lead") or "New Lead"
         stage_num = stage_to_num(stage)
-
-        existing = conn.execute("SELECT id FROM deals WHERE name=?", (name,)).fetchone()
+        existing  = _row(_exec(conn, "SELECT id FROM deals WHERE name=?", (name,)))
         try:
             if existing:
-                deal_id = existing[0]
-                conn.execute(
+                deal_id = existing["id"]
+                _exec(conn,
                     """UPDATE deals SET short=?,sector=?,useCase=?,service=?,stage=?,stageNum=?,
                        revenue=?,fee=?,volume=?,owner=?,notes=?,priority=?,effort=?,
                        competitive_risk=?,close_date=?,updated_at=?,created_by=? WHERE id=?""",
@@ -461,9 +514,10 @@ async def import_csv(file: UploadFile = File(...)):
                 )
                 log_activity(conn, deal_id, "updated", "csv_import", None, name, row.get("created_by","import"))
             else:
-                conn.execute(
-                    """INSERT INTO deals (name,short,sector,useCase,service,stage,stageNum,revenue,fee,
-                       volume,owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by)
+                new_id = _insert(conn,
+                    """INSERT INTO deals
+                       (name,short,sector,useCase,service,stage,stageNum,revenue,fee,
+                        volume,owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by)
                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                     (name, row.get("short"), row.get("sector"), row.get("useCase"),
                      row.get("service"), stage, stage_num, revenue, row.get("fee"),
@@ -471,7 +525,6 @@ async def import_csv(file: UploadFile = File(...)):
                      effort, row.get("competitive_risk"), row.get("close_date"), now, now,
                      row.get("created_by","import"))
                 )
-                new_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
                 log_activity(conn, new_id, "created", "csv_import", None, name, row.get("created_by","import"))
             imported += 1
         except Exception as e:
@@ -484,15 +537,13 @@ async def import_csv(file: UploadFile = File(...)):
 @app.get("/api/export/csv")
 def export_csv():
     conn = get_db()
-    rows = conn.execute("SELECT * FROM deals ORDER BY stageNum, revenue DESC").fetchall()
+    rows = _rows(_exec(conn, "SELECT * FROM deals ORDER BY stageNum, revenue DESC"))
     conn.close()
     output = io.StringIO()
     if rows:
-        fieldnames = list(dict(rows[0]).keys())
-        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer = csv.DictWriter(output, fieldnames=list(rows[0].keys()))
         writer.writeheader()
-        for row in rows:
-            writer.writerow(dict(row))
+        writer.writerows(rows)
     output.seek(0)
     return StreamingResponse(
         io.BytesIO(output.getvalue().encode("utf-8")),
@@ -503,9 +554,8 @@ def export_csv():
 @app.get("/api/export/json")
 def export_json():
     conn = get_db()
-    rows = conn.execute("SELECT * FROM deals ORDER BY stageNum, revenue DESC").fetchall()
+    data = _rows(_exec(conn, "SELECT * FROM deals ORDER BY stageNum, revenue DESC"))
     conn.close()
-    data = [dict(r) for r in rows]
     json_bytes = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
     return StreamingResponse(
         io.BytesIO(json_bytes),
@@ -521,41 +571,40 @@ def download_template():
 @app.get("/api/activities/{deal_id}")
 def get_activities(deal_id: int):
     conn = get_db()
-    rows = conn.execute(
+    rows = _rows(_exec(conn,
         "SELECT * FROM activities WHERE deal_id=? ORDER BY timestamp DESC", (deal_id,)
-    ).fetchall()
+    ))
     conn.close()
-    return [dict(r) for r in rows]
+    return rows
 
 @app.get("/api/stats")
 def get_stats():
     conn = get_db()
-    rows = conn.execute("SELECT * FROM deals").fetchall()
+    deals = _rows(_exec(conn, "SELECT * FROM deals"))
     conn.close()
-    deals = [dict(r) for r in rows]
     total_pipeline = sum(d.get("revenue") or 0 for d in deals)
-    active_deals = sum(1 for d in deals if d.get("stageNum") in (1, 2))
-    p1_count = sum(1 for d in deals if d.get("priority") == "P1")
-    top_deal = max(deals, key=lambda d: d.get("revenue") or 0, default=None)
-    services = len(set(d.get("service") for d in deals if d.get("service")))
-    survey_pipeline = sum(d.get("revenue") or 0 for d in deals if d.get("service") == "Survey")
+    active_deals   = sum(1 for d in deals if d.get("stageNum") in (1, 2))
+    p1_count       = sum(1 for d in deals if d.get("priority") == "P1")
+    top_deal       = max(deals, key=lambda d: d.get("revenue") or 0, default=None)
+    services       = len(set(d.get("service") for d in deals if d.get("service")))
+    survey_pipeline    = sum(d.get("revenue") or 0 for d in deals if d.get("service") == "Survey")
     survey_target_2026 = 12_000_000
-    stage_breakdown = {}
+    stage_breakdown    = {}
     for d in deals:
         s = d.get("stage","Unknown")
         if s not in stage_breakdown:
             stage_breakdown[s] = {"count": 0, "revenue": 0}
-        stage_breakdown[s]["count"] += 1
+        stage_breakdown[s]["count"]   += 1
         stage_breakdown[s]["revenue"] += d.get("revenue") or 0
     return {
         "total_pipeline": total_pipeline,
-        "active_deals": active_deals,
-        "p1_count": p1_count,
+        "active_deals":   active_deals,
+        "p1_count":       p1_count,
         "top_deal": {"name": top_deal["name"], "revenue": top_deal["revenue"]} if top_deal else None,
         "services_count": services,
-        "survey_gap": survey_target_2026 - survey_pipeline,
+        "survey_gap":     survey_target_2026 - survey_pipeline,
         "survey_pipeline": survey_pipeline,
-        "deal_count": len(deals),
+        "deal_count":     len(deals),
         "stage_breakdown": stage_breakdown,
     }
 
@@ -567,23 +616,20 @@ async def login(request: Request):
         data = await request.json()
     except Exception:
         return JSONResponse({"success": False, "message": "Invalid request"}, status_code=400)
-    email = data.get("username", "").strip().lower()
+    email    = data.get("username", "").strip().lower()
     password = data.get("password", "")
-    user = USERS.get(email)
+    user     = USERS.get(email)
     if user and password == user["password"]:
         token = secrets.token_urlsafe(32)
         _sessions[token] = {
             "expires_at": datetime.now() + timedelta(hours=SESSION_DURATION_HOURS),
             "email": email,
-            "name": user["name"],
+            "name":  user["name"],
         }
         resp = JSONResponse({"success": True, "name": user["name"]})
         resp.set_cookie(
-            key="pmc_session",
-            value=token,
-            httponly=True,
-            max_age=SESSION_DURATION_HOURS * 3600,
-            samesite="lax",
+            key="pmc_session", value=token,
+            httponly=True, max_age=SESSION_DURATION_HOURS * 3600, samesite="lax",
         )
         return resp
     return JSONResponse({"success": False, "message": "Invalid username or password"}, status_code=401)
@@ -604,7 +650,7 @@ async def me(request: Request):
         return {"authenticated": True, "email": session["email"], "name": session["name"]}
     return JSONResponse({"authenticated": False}, status_code=401)
 
-# ─── Static files (must be after all routes) ──────────────────────────────────
+# ─── Static files (must be last) ─────────────────────────────────────────────
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 if __name__ == "__main__":
