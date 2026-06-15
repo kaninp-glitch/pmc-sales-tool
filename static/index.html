@@ -49,7 +49,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 .lb-stats{display:flex;gap:40px;}
 .lb-stat-val{font-family:var(--font-display);font-size:30px;font-weight:500;color:#fff;}
 .lb-stat-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;}
-.lb-logo{width:160px;margin-bottom:36px;opacity:.95;}
+.lb-logo{height:33vh;width:auto;max-width:80%;object-fit:contain;opacity:.95;}
 .login-form-panel{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 48px;}
 .login-card{width:100%;max-width:360px;}
 .lf-logo{width:130px;margin-bottom:28px;}
@@ -222,9 +222,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 .bc-owner{width:24px;height:24px;border-radius:50%;background:var(--pmc-navy-700);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:600;}
 .bc-date{font-size:10px;color:var(--text-faint);}
 .bc-risk{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
-.bc-risk.high{background:var(--pmc-red-100);color:var(--pmc-red-600);}
-.bc-risk.med{background:var(--status-warning-soft);color:var(--status-warning);}
-.bc-risk.low{background:var(--status-success-soft);color:var(--status-success);}
+.bc-risk.p1{background:var(--pmc-red-100);color:var(--pmc-red-600);}
+.bc-risk.p2{background:var(--status-warning-soft);color:var(--status-warning);}
+.bc-risk.p3{background:#e7ebf3;color:var(--text-muted);}
 
 /* ── TABLE ────────────────────────────────────────────── */
 #tableView{overflow-x:auto;}
@@ -319,13 +319,6 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
 <div id="loginScreen">
   <div class="login-brand">
     <img src="/static/assets/pmc-logo-white.png" class="lb-logo" alt="PMC"/>
-    <div class="lb-eyebrow">Sales Operating System</div>
-    <h1 class="lb-headline">The pipeline behind Thailand's most trusted field network.</h1>
-    <div class="lb-stats">
-      <div><div class="lb-stat-val">25,000</div><div class="lb-stat-lbl">Postmen nationwide</div></div>
-      <div><div class="lb-stat-val">77</div><div class="lb-stat-lbl">Provinces covered</div></div>
-      <div><div class="lb-stat-val">142</div><div class="lb-stat-lbl">Years of trust</div></div>
-    </div>
   </div>
   <div class="login-form-panel">
     <div class="login-card">
@@ -566,7 +559,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
   <div class="form-grid">
     <div class="form-group full"><label>Client Name *</label><input id="f_name" type="text" required placeholder="e.g. Kasikorn Bank"/></div>
     <div class="form-group"><label>Sector</label>
-      <select id="f_sector"><option>Banking</option><option>Insurance</option><option>Retail/eCommerce</option><option>Government</option><option>Healthcare</option><option>Telecom</option><option>Other</option></select>
+      <select id="f_sector"><option>Banking</option><option>Insurance</option><option>Retail/eCommerce</option><option>Government</option><option>Healthcare</option><option>Telecom</option><option>Entertainment</option><option>Other</option></select>
     </div>
     <div class="form-group"><label>Service</label>
       <select id="f_service"><option>Survey</option><option>Express</option><option>Matching</option><option>Value-Added</option><option>Commerce</option></select>
@@ -587,6 +580,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text-strong);
     <div class="form-group"><label>Contact Email</label><input id="f_contact_email" type="email"/></div>
     <div class="form-group"><label>Contact Phone</label><input id="f_contact_phone" type="text"/></div>
     <div class="form-group"><label>Jobs per Year</label><input id="f_jobs_year" type="number" min="0"/></div>
+    <div class="form-group"><label>Contract Period (months)</label><input id="f_contract_period" type="number" min="1" placeholder="e.g. 12"/></div>
+    <div class="form-group"><label>Revenue per Year (THB)</label><input id="f_revenue_per_year" type="number" min="0" step="100000" placeholder="e.g. 1200000"/></div>
+    <div class="form-group"><label>Revenue per Month (THB)</label><input id="f_revenue_per_month" type="number" min="0" step="10000" placeholder="e.g. 100000"/></div>
     <div class="form-group"><label>Budget Status</label>
       <select id="f_budget_status"><option>Unknown</option><option>Confirmed</option><option>Pending</option><option>No Budget</option></select>
     </div>
@@ -1111,7 +1107,7 @@ function renderBoard(){
           <div class="bc-footer">
             <div class="bc-owner" title="${d.owner||''}">${initials(d.owner||'')}</div>
             <div class="bc-date">${d.close_date||'–'}</div>
-            <span class="bc-risk ${(d.competitive_risk||'').toLowerCase()}">${d.competitive_risk||'–'}</span>
+            <span class="bc-risk ${(d.priority||'').toLowerCase()}">${d.priority||'–'}</span>
           </div>
         </div>`).join('')}
       </div>
@@ -1373,7 +1369,7 @@ function openCreateModal(){
   document.getElementById('modalTitle').textContent='New Opportunity';
   document.getElementById('modalSaveBtn').textContent='Create';
   ['name','contact_name','contact_email','contact_phone','notes','decision_maker','next_action','created_by'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)el.value='';});
-  ['revenue','jobs_year'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)el.value='';});
+  ['revenue','jobs_year','contract_period','revenue_per_year','revenue_per_month'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)el.value='';});
   document.getElementById('f_stage').value='New Lead';
   document.getElementById('f_priority').value='P3';
   document.getElementById('f_competitive_risk').value='Low';
@@ -1390,7 +1386,7 @@ function openEditModal(id){
   editingDealId=id;
   document.getElementById('modalTitle').textContent='Edit Opportunity';
   document.getElementById('modalSaveBtn').textContent='Save Changes';
-  const fields=['name','sector','service','stage','priority','revenue','close_date','owner','competitive_risk','contact_name','contact_email','contact_phone','jobs_year','budget_status','decision_maker','next_action','created_by','notes'];
+  const fields=['name','sector','service','stage','priority','revenue','close_date','owner','competitive_risk','contact_name','contact_email','contact_phone','jobs_year','contract_period','revenue_per_year','revenue_per_month','budget_status','decision_maker','next_action','created_by','notes'];
   fields.forEach(f=>{const el=document.getElementById('f_'+f);if(el) el.value=d[f]??'';});
   document.getElementById('dealModal').style.display='flex';
 }
@@ -1413,7 +1409,10 @@ async function saveDeal(){
     contact_name:document.getElementById('f_contact_name').value,
     contact_email:document.getElementById('f_contact_email').value,
     contact_phone:document.getElementById('f_contact_phone').value,
-    jobs_year:parseInt(document.getElementById('f_jobs_year').value)||0,
+    jobs_year:parseInt(document.getElementById('f_jobs_year').value)||null,
+    contract_period:parseInt(document.getElementById('f_contract_period').value)||null,
+    revenue_per_year:parseFloat(document.getElementById('f_revenue_per_year').value)||null,
+    revenue_per_month:parseFloat(document.getElementById('f_revenue_per_month').value)||null,
     budget_status:document.getElementById('f_budget_status').value,
     decision_maker:document.getElementById('f_decision_maker').value,
     next_action:document.getElementById('f_next_action').value,

@@ -123,6 +123,31 @@ def init_db():
 
 init_db()
 
+def migrate_db():
+    """Add any missing columns to existing DB without data loss."""
+    conn = get_db()
+    new_cols = [
+        ("jobs_year",        "INTEGER"),
+        ("contact_name",     "TEXT"),
+        ("contact_email",    "TEXT"),
+        ("contact_phone",    "TEXT"),
+        ("budget_status",    "TEXT"),
+        ("decision_maker",   "TEXT"),
+        ("next_action",      "TEXT"),
+        ("contract_period",  "INTEGER"),
+        ("revenue_per_year", "REAL"),
+        ("revenue_per_month","REAL"),
+    ]
+    for col, typ in new_cols:
+        try:
+            conn.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
+        except Exception:
+            pass  # column already exists
+    conn.commit()
+    conn.close()
+
+migrate_db()
+
 # ─── Stage mapping ───────────────────────────────────────────────────────────
 
 STAGE_MAP = {
@@ -188,6 +213,16 @@ class DealCreate(BaseModel):
     competitive_risk: Optional[str] = None
     close_date: Optional[str] = None
     created_by: Optional[str] = None
+    jobs_year: Optional[int] = None
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    budget_status: Optional[str] = None
+    decision_maker: Optional[str] = None
+    next_action: Optional[str] = None
+    contract_period: Optional[int] = None
+    revenue_per_year: Optional[float] = None
+    revenue_per_month: Optional[float] = None
 
 class DealUpdate(BaseModel):
     name: Optional[str] = None
@@ -207,6 +242,16 @@ class DealUpdate(BaseModel):
     competitive_risk: Optional[str] = None
     close_date: Optional[str] = None
     created_by: Optional[str] = None
+    jobs_year: Optional[int] = None
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    budget_status: Optional[str] = None
+    decision_maker: Optional[str] = None
+    next_action: Optional[str] = None
+    contract_period: Optional[int] = None
+    revenue_per_year: Optional[float] = None
+    revenue_per_month: Optional[float] = None
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -253,11 +298,16 @@ def create_deal(deal: DealCreate, request: Request):
     stage_num = deal.stageNum if deal.stageNum else stage_to_num(stage)
     conn.execute(
         """INSERT INTO deals (name,short,sector,useCase,service,stage,stageNum,revenue,fee,volume,
-           owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+           owner,notes,priority,effort,competitive_risk,close_date,created_at,updated_at,created_by,
+           jobs_year,contact_name,contact_email,contact_phone,budget_status,decision_maker,
+           next_action,contract_period,revenue_per_year,revenue_per_month)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (deal.name, deal.short, deal.sector, deal.useCase, deal.service, stage, stage_num,
          deal.revenue, deal.fee, deal.volume, deal.owner, deal.notes, deal.priority,
-         deal.effort, deal.competitive_risk, deal.close_date, now, now, deal.created_by)
+         deal.effort, deal.competitive_risk, deal.close_date, now, now, deal.created_by,
+         deal.jobs_year, deal.contact_name, deal.contact_email, deal.contact_phone,
+         deal.budget_status, deal.decision_maker, deal.next_action,
+         deal.contract_period, deal.revenue_per_year, deal.revenue_per_month)
     )
     new_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     log_activity(conn, new_id, "created", None, None, deal.name, deal.created_by or "unknown")
